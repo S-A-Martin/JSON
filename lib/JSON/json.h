@@ -1,75 +1,38 @@
 #ifndef JSON_H
 #define JSON_H
 
-#include <iostream>
-#include <map>
-#include <string>
-#include <variant>
-#include <vector>
+#include <map>       // std::map
+#include <string>    // std::string
+#include <variant>   // std::variant, std::monostate, std::get
+#include <vector>    // std::vector
+#include <iostream>  // std::ostream
 
 namespace JSON {
-struct Null {};
 
-std::ostream& operator<<(std::ostream& os, Null& n) {
-  os << "null";
-  return os;
-}
+    struct Null {
+        friend bool operator==(const Null& lhs, const Null& rhs) { return true; }
+        friend bool operator!=(const Null& lhs, const Null& rhs) { return false; }
+        friend std::ostream& operator<<(std::ostream& os, const Null& n) {
+            os << "null";
+            return os;
+        }
+    };
 
-class Data;  // forward declaration for JSON::Object and JSON::Array
+    class Data;  // Forward declare to allow typedef of Object and Array containing Data
 
-using Object = std::map<std::string, Data>;
-using Array = std::vector<Data>;
+    typedef std::map<std::string, Data> Object;
+    typedef std::vector<Data> Array;
+    typedef std::map<std::string, Data> File;
 
-std::string types[] = {"JSON::Null",  "int",        "double",
-                       "float",       "bool",       "JSON::Array",
-                       "JSON::Array", "std::string"};
+    class Data {
+      public:
+        std::variant<std::monostate, Null, int, double, float, bool, Array, Object, std::string> value;
 
-class Data {
-  using JSONVariants =
-      std::variant<Null, int, double, float, bool, Array, Object, std::string>;
+        Data() : value(Null{}) {}
+    };  // class Data
 
- public:
-  // assignment operator overload - for specific case
-  Data& operator=(const char* t) {
-    val = std::string(t);
-    return *this;
-  }
+    const std::string types[9] = { "std::monostate", "JSON::Null", "int", "double", "float", "bool", "JSON::Array", "JSON::Object", "std::string" };
 
-  // assignment operator overload - template for general cases
-  template <typename T>
-  Data& operator=(T t) {
-    val = t;
-    return *this;
-  }
-
-  // Constructors - for specific cases
-  Data() : val(Null{}) {}
-  Data(const char* t) : val(std::string{t}) {}
-
-  // Constructors - template for general cases
-  template <typename T>
-  Data(T t) : val(t) {}
-
-  // parenthesis operator overload
-  JSONVariants& operator()() { return val; }
-
-  // get wrapper
-  template <typename T>
-  T& Value() {
-    return std::get<T>(val);
-  }
-
-  // index wrapper
-  int Index() { return val.index(); }
-
- private:
-  // Data members
-  JSONVariants val;
-
-};  // JSON::Data
-
-};  // namespace JSON
-
-using JSONFile = JSON::Object;
+}  // namespace JSON
 
 #endif  // JSON_H
