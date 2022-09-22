@@ -265,21 +265,21 @@ TEST(JSON_Data, JSONArrayInsertionOperatorReturnsCorrectString) {
     JSON::Data data = JSON::Array{ true, 5, 8.2f };
     std::stringstream ss;
     ss << data;
-    EXPECT_EQ(ss.str(), "Invalid Output (JSON::Array)");
+    EXPECT_EQ(ss.str(), "\"Invalid Output (JSON::Array)\"");
 }
 
 TEST(JSON_Data, JSONObjectInsertionOperatorReturnsCorrectString) {
     JSON::Data data = JSON::Object{ { "test1", 1 }, { "test2", 2 } };
     std::stringstream ss;
     ss << data;
-    EXPECT_EQ(ss.str(), "Invalid Output (JSON::Object)");
+    EXPECT_EQ(ss.str(), "\"Invalid Output (JSON::Object)\"");
 }
 
 TEST(JSON_Data, StringInsertionOperatorReturnsCorrectString) {
     JSON::Data data = "Test String";
     std::stringstream ss;
     ss << data;
-    EXPECT_EQ(ss.str(), "Test String");
+    EXPECT_EQ(ss.str(), "\"Test String\"");
 }
 
 TEST(JSON_Data, JSONNullTypeToStringReturnsCorrectString) {
@@ -433,4 +433,65 @@ TEST(JSON_File, CanAccessDifferingJSONDataPrimitivesViaKeys) {
     EXPECT_EQ(json["value5"], 7.56);
     EXPECT_EQ(json["value6"][1], 5.5f);
     EXPECT_EQ(json["value7"]["nested1"], 1);
+}
+
+TEST(JSON_PRETTY_PRINT, PrintObjectParenthesis) {
+    JSON::File json =
+        JSON::Object{
+            { "product-info", JSON::Object{ { "artist", "Mateus Asato" }, { "title", "20 Killer Licks" }, { "difficulty", "Advanced" }, { "price", 29.99 }, { "release-year", "2022" } } },
+            { "tracks", JSON::Array{ JSON::Object{ { "filename", "source/videos/biggerandbetter.mp4" }, { "video-extension", "mp4" }, { "context", "Bigger And Better" }, { "type", "Solo" }, { "iteration", nullptr }, { "pretty-name", nullptr } }, JSON::Object{ { "filename", "source/videos/biggerandbetter_lick1.mp4" }, { "video-extension", "mp4" }, { "context", "Bigger And Better" }, { "type", "Lick" }, { "iteration", 1 }, { "pretty-name", "Bigger And Better Lick 1" } }, JSON::Object{ { "filename", "source/videos/biggerandbetter_lick2.mp4" }, { "video-extension", "mp4" }, { "context", "Bigger And Better" }, { "type", "Lick" }, { "iteration", 2 }, { "pretty-name", "Bigger And Better Lick 2" } }, JSON::Object{ { "filename", "source/videos/deadonthetracks.mp4" }, { "video-extension", "mp4" }, { "context", "Dead On The Tracks" }, { "type", "Solo" }, { "iteration", nullptr }, { "pretty-name", nullptr } }, JSON::Object{ { "filename", "source/videos/flogthat.mp4" }, { "video-extension", "mp4" }, { "context", "Flog That" }, { "type", "Solo" }, { "iteration", nullptr }, { "pretty-name", nullptr } } } }
+        };
+
+    std::string expected = R"({
+    "product-info": {
+        "artist": "Mateus Asato",
+        "difficulty": "Advanced",
+        "price": 29.99,
+        "release-year": "2022",
+        "title": "20 Killer Licks"
+    },
+    "tracks": [
+        {
+            "context": "Bigger And Better",
+            "filename": "source/videos/biggerandbetter.mp4",
+            "iteration": null,
+            "pretty-name": null,
+            "type": "Solo",
+            "video-extension": "mp4"
+        },
+        {
+            "context": "Bigger And Better",
+            "filename": "source/videos/biggerandbetter_lick1.mp4",
+            "iteration": 1,
+            "pretty-name": "Bigger And Better Lick 1",
+            "type": "Lick",
+            "video-extension": "mp4"
+        },
+        {
+            "context": "Bigger And Better",
+            "filename": "source/videos/biggerandbetter_lick2.mp4",
+            "iteration": 2,
+            "pretty-name": "Bigger And Better Lick 2",
+            "type": "Lick",
+            "video-extension": "mp4"
+        },
+        {
+            "context": "Dead On The Tracks",
+            "filename": "source/videos/deadonthetracks.mp4",
+            "iteration": null,
+            "pretty-name": null,
+            "type": "Solo",
+            "video-extension": "mp4"
+        },
+        {
+            "context": "Flog That",
+            "filename": "source/videos/flogthat.mp4",
+            "iteration": null,
+            "pretty-name": null,
+            "type": "Solo",
+            "video-extension": "mp4"
+        }
+    ]
+})";
+    EXPECT_EQ(JSON::prettyPrint(json), expected);
 }

@@ -31,6 +31,8 @@ AllowShortEnumsOnASingleLine: false
 NamespaceIndentation: All
 BreakBeforeBraces: Custom
 SortIncludes: false
+BreakBeforeBinaryOperators: None
+AlignOperands: DontAlign
 
 BraceWrapping:
   AfterEnum: false

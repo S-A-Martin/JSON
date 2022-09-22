@@ -6,6 +6,7 @@
 #include <variant>   // std::variant, std::get
 #include <vector>    // std::vector
 #include <iostream>  // std::ostream
+#include <sstream>
 
 /* Not to self I didn't that know overloaded constuctors took the place of overloaded assignment operators.
 So:
@@ -24,15 +25,8 @@ The above could be lies. Find out more!
 
 namespace JSON {
 
-    struct Null {
-        friend bool operator==(Null const& lhs, Null const& rhs) { return true; }
-        friend bool operator!=(Null const& lhs, Null const& rhs) { return false; }
-        friend std::ostream& operator<<(std::ostream& os, Null const& n) {
-            os << "null";
-            return os;
-        }
-        Null() {}
-    };
+    struct Null {};
+    bool operator==(Null const& lhs, Null const& rhs) { return true; }
 
     class Data;  // Forward declare to allow typedef of Object and Array containing Data
 
@@ -64,6 +58,14 @@ namespace JSON {
         // Inequality Operator
         friend bool operator!=(Data const& lhs, Data const& rhs) {
             return lhs.value != rhs.value;
+        }
+        // Equality Operator with Null
+        friend bool operator==(Data const& lhs, Null const& rhs) {
+            return std::get_if<Null>(&lhs.value) ? true : false;
+        }
+        // Inequality Operator with Null
+        friend bool operator!=(Data const& lhs, Null const& rhs) {
+            return !std::get_if<Null>(&lhs.value) ? true : false;
         }
 
         // Conversion Operators
@@ -127,26 +129,86 @@ namespace JSON {
 
             // print if val is Array
             if (Array const* i = std::get_if<Array>(&d.value))
-                os << "Invalid Output (JSON::Array)";
+                os << "\"Invalid Output (JSON::Array)\"";
 
             // print if val is Object
             if (Object const* i = std::get_if<Object>(&d.value))
-                os << "Invalid Output (JSON::Object)";
+                os << "\"Invalid Output (JSON::Object)\"";
 
             // print if val is std::string
             if (std::string const* i = std::get_if<std::string>(&d.value))
-                os << std::get<std::string>(d.value);
+                os << "\"" << std::get<std::string>(d.value) << "\"";
 
             return os;
         }
 
     };  // class Data
 
-    bool operator==(Null const& lhs, Data const& rhs) { return std::get_if<Null>(&rhs.value) ? true : false; }
-
     std::string const types[9] = { "JSON::Null", "int", "double", "float", "bool", "JSON::Array", "JSON::Object", "std::string" };
     std::string const typeToString(Data const& data) { return { "<" + types[data.index()] + ">" }; }
 
+    int indentation = 1;
+
+    std::string getInd(int indent) {
+        std::string spaces;
+        for (int i = 0; i < indentation * indent; i++) {
+            spaces += " ";
+        }
+        return spaces;
+    }
+
+    std::string prettyPrint(Array& array, int indent);
+
+    std::string prettyPrint(Data& data, int indent) {
+        std::stringstream ss;
+        if (data.index() == 6) {
+            ss << "{\n";
+            indentation++;
+            // iterate and print map
+            File::iterator it;
+            Object object = std::get<Object>(data.value);
+            for (it = object.begin(); it != object.end(); it++) {
+                ss << getInd(indent) << "\"" << it->first << "\": " << prettyPrint(it->second, indent);
+                if (it != std::prev(object.end(), 1)) { ss << ","; }
+                ss << '\n';
+            }
+            indentation--;
+            ss << getInd(indent) << "}";
+        }
+
+        else if (data.index() == 5) { ss << prettyPrint(std::get<Array>(data.value), indent); }
+        else { ss << data; }
+        return ss.str();
+    }
+
+    std::string prettyPrint(Array& array, int indent) {
+        std::stringstream ss;
+        ss << "[\n";
+        indentation++;
+        for (int i = 0; i < array.size(); i++) {
+            ss << getInd(indent) << prettyPrint(array[i], indent);
+            if (i != array.size() - 1) { ss << ","; }
+            ss << '\n';
+        }
+        indentation--;
+        ss << getInd(indent) << "]";
+        return ss.str();
+    }
+
+    std::string prettyPrint(File& file, int indent = 4) {
+        std::stringstream ss;
+        ss << "{\n";
+        // iterate and print map
+        File::iterator it;
+        for (it = file.begin(); it != file.end(); it++) {
+            ss << getInd(indent) << "\"" << it->first << "\": " << prettyPrint(it->second, indent);
+            if (it != std::prev(file.end(), 1)) { ss << ","; }
+            ss << '\n';
+        }
+        indentation--;
+        ss << getInd(indent) << "}";
+        return ss.str();
+    }
 }  // namespace JSON
 
 #endif  // JSON_H
