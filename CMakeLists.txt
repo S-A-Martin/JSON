@@ -6,4 +6,5 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_subdirectory(src)
 add_subdirectory(tst)
+add_subdirectory(lib/json/)
 add_subdirectory(lib/googletest/)

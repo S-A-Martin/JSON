@@ -6,3 +6,5 @@ target_include_directories(
     ${BINARY} PUBLIC ${CMAKE_SOURCE_DIR}/lib
     ${BINARY} PUBLIC ${CMAKE_SOURCE_DIR}/lib/json/
 )
+
+target_link_libraries(${BINARY} json)

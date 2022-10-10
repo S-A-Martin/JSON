@@ -1,67 +1,56 @@
 #include "gtest.h"
-#include "json.h"
-#include <sstream>
-
-// // Only applicable for testing. For sanity, double check these
-// // match the std::variant value types in JSON::Data:
-enum Type {
-    JSONNULL = 0,
-    INT,
-    DOUBLE,
-    FLOAT,
-    BOOL,
-    JSONARRAY,
-    JSONOBJECT,
-    STRING
-};
+#include "json_null.h"
+#include "json_types.h"
+#include "json_data.h"
+#include "json_util.h"
 
 ///// JSON Data Constructors
 TEST(JSON_Data, DefaultConstructorValueShouldBeNull) {
     JSON::Null null;
     JSON::Data data;
-    EXPECT_EQ(data.index(), Type::JSONNULL);
+    EXPECT_EQ(data.index(), JSON::Type::JSON_NULL);
     EXPECT_EQ(std::get<JSON::Null>(data.value), null);
 }
 
 TEST(JSON_Data, ConstructorWithNullptrShouldSetValueToJSONNull) {
     JSON::Null null;
     JSON::Data data(nullptr);
-    EXPECT_EQ(data.index(), Type::JSONNULL);
+    EXPECT_EQ(data.index(), JSON::Type::JSON_NULL);
     EXPECT_EQ(std::get<JSON::Null>(data.value), null);
 }
 
-TEST(JSON_Data, ConstructorWithIntShouldSetValueToInt) {
+TEST(JSON_Data, ConstructorWithIntShouldSetValueToDouble) {
     int x = 5;
     JSON::Data data(x);
-    EXPECT_EQ(data.index(), Type::INT);
-    EXPECT_EQ(std::get<int>(data.value), x);
+    EXPECT_EQ(data.index(), JSON::Type::DOUBLE);
+    EXPECT_EQ(std::get<double>(data.value), x);
 }
 
 TEST(JSON_Data, ConstructorWithDoubleShouldSetValueToDouble) {
     double x = 5.5;
     JSON::Data data(x);
-    EXPECT_EQ(data.index(), Type::DOUBLE);
+    EXPECT_EQ(data.index(), JSON::Type::DOUBLE);
     EXPECT_EQ(std::get<double>(data.value), x);
 }
 
 TEST(JSON_Data, ConstructorWithFloatShouldSetValueToFloat) {
     float x = 5.5f;
     JSON::Data data(x);
-    EXPECT_EQ(data.index(), Type::FLOAT);
-    EXPECT_EQ(std::get<float>(data.value), x);
+    EXPECT_EQ(data.index(), JSON::Type::DOUBLE);
+    EXPECT_EQ(std::get<double>(data.value), x);
 }
 
 TEST(JSON_Data, ConstructorWithBoolShouldSetValueToBool) {
     bool x = true;
     JSON::Data data(x);
-    EXPECT_EQ(data.index(), Type::BOOL);
+    EXPECT_EQ(data.index(), JSON::Type::BOOL);
     EXPECT_EQ(std::get<bool>(data.value), x);
 }
 
 TEST(JSON_Data, ConstructorWithJSONArrayShouldSetValueToJSONArray) {
     JSON::Array array = { { 1 }, { 1 }, { 1 } };
     JSON::Data data(array);
-    EXPECT_EQ(data.index(), Type::JSONARRAY);
+    EXPECT_EQ(data.index(), JSON::Type::JSON_ARRAY);
     EXPECT_EQ(std::get<JSON::Array>(data.value), array);
 }
 
@@ -71,7 +60,7 @@ TEST(JSON_Data, ConstructorWithJSONObjectShouldSetValueToJSONObject) {
         { "key2", nullptr }
     };
     JSON::Data data(object);
-    EXPECT_EQ(data.index(), Type::JSONOBJECT);
+    EXPECT_EQ(data.index(), JSON::Type::JSON_OBJECT);
     EXPECT_EQ(std::get<JSON::Object>(data.value), object);
 }
 
@@ -85,7 +74,7 @@ TEST(JSON_Data, ConstructorWithConstCharPtrShouldSetValueToString) {
 TEST(JSON_Data, ConstructorWithStringShouldSetValueToString) {
     std::string x = "This is a test";
     JSON::Data data(x);
-    EXPECT_EQ(data.index(), Type::STRING);
+    EXPECT_EQ(data.index(), JSON::Type::STD_STRING);
     EXPECT_EQ(std::get<std::string>(data.value), x);
 }
 
@@ -95,7 +84,7 @@ TEST(JSON_Data, AssignmentWithJSONNullSetsValue) {
     JSON::Data data(5);
     JSON::Null x;
     data = x;
-    EXPECT_EQ(data.index(), Type::JSONNULL);
+    EXPECT_EQ(data.index(), JSON::Type::JSON_NULL);
     EXPECT_EQ(std::get<JSON::Null>(data.value), x);
 }
 
@@ -103,15 +92,15 @@ TEST(JSON_Data, AssignmentWithIntSetsValue) {
     JSON::Data data;
     int x = 50;
     data = x;
-    EXPECT_EQ(data.index(), Type::INT);
-    EXPECT_EQ(std::get<int>(data.value), x);
+    EXPECT_EQ(data.index(), JSON::Type::DOUBLE);
+    EXPECT_EQ(std::get<double>(data.value), x);
 }
 
 TEST(JSON_Data, AssignmentWithDoubleSetsValue) {
     JSON::Data data;
     double x = 50.5;
     data = x;
-    EXPECT_EQ(data.index(), Type::DOUBLE);
+    EXPECT_EQ(data.index(), JSON::Type::DOUBLE);
     EXPECT_EQ(std::get<double>(data.value), x);
 }
 
@@ -119,15 +108,15 @@ TEST(JSON_Data, AssignmentWithFloatSetsValue) {
     JSON::Data data;
     float x = 50.5f;
     data = x;
-    EXPECT_EQ(data.index(), Type::FLOAT);
-    EXPECT_EQ(std::get<float>(data.value), x);
+    EXPECT_EQ(data.index(), JSON::Type::DOUBLE);
+    EXPECT_EQ(std::get<double>(data.value), x);
 }
 
 TEST(JSON_Data, AssignmentWithBoolSetsValue) {
     JSON::Data data;
     bool x = false;
     data = x;
-    EXPECT_EQ(data.index(), Type::BOOL);
+    EXPECT_EQ(data.index(), JSON::Type::BOOL);
     EXPECT_EQ(std::get<bool>(data.value), x);
 }
 
@@ -135,7 +124,7 @@ TEST(JSON_Data, AssignmentWithJSONArraySetsValue) {
     JSON::Data data;
     JSON::Array x = { { 1 }, { 2.5 }, { false } };
     data = x;
-    EXPECT_EQ(data.index(), Type::JSONARRAY);
+    EXPECT_EQ(data.index(), JSON::Type::JSON_ARRAY);
     EXPECT_EQ(std::get<JSON::Array>(data.value), x);
 }
 
@@ -146,7 +135,7 @@ TEST(JSON_Data, AssignmentWithJSONObjectSetsValue) {
         { "key2", nullptr }
     };
     data = x;
-    EXPECT_EQ(data.index(), Type::JSONOBJECT);
+    EXPECT_EQ(data.index(), JSON::Type::JSON_OBJECT);
     EXPECT_EQ(std::get<JSON::Object>(data.value), x);
 }
 
@@ -154,7 +143,7 @@ TEST(JSON_Data, AssignmentWithStringSetsValue) {
     JSON::Data data;
     std::string x("Test");
     data = x;
-    EXPECT_EQ(data.index(), Type::STRING);
+    EXPECT_EQ(data.index(), JSON::Type::STD_STRING);
     EXPECT_EQ(std::get<std::string>(data.value), x);
 }
 
@@ -168,7 +157,7 @@ TEST(JSON_Data, ConversionOperatorAllowsConversionToNull) {
 TEST(JSON_Data, ConversionOperatorAllowsConversionToInt) {
     JSON::Data x = 1;
     int y = x;
-    EXPECT_EQ(std::get<int>(x.value), y);
+    EXPECT_EQ(std::get<double>(x.value), y);
 }
 
 TEST(JSON_Data, ConversionOperatorAllowsConversionToDouble) {
@@ -180,7 +169,7 @@ TEST(JSON_Data, ConversionOperatorAllowsConversionToDouble) {
 TEST(JSON_Data, ConversionOperatorAllowsConversionToFloat) {
     JSON::Data x = 5.5f;
     float y = x;
-    EXPECT_EQ(std::get<float>(x.value), y);
+    EXPECT_EQ(std::get<double>(x.value), y);
 }
 
 TEST(JSON_Data, ConversionOperatorAllowsConversionToBool) {
@@ -289,25 +278,11 @@ TEST(JSON_Data, JSONNullTypeToStringReturnsCorrectString) {
     EXPECT_EQ(ss.str(), "<JSON::Null>");
 }
 
-TEST(JSON_Data, IntTypeToStringReturnsCorrectString) {
-    JSON::Data data = 420;
-    std::stringstream ss;
-    ss << JSON::typeToString(data);
-    EXPECT_EQ(ss.str(), "<int>");
-}
-
 TEST(JSON_Data, DoubleTypeToStringReturnsCorrectString) {
     JSON::Data data = 5.67;
     std::stringstream ss;
     ss << JSON::typeToString(data);
     EXPECT_EQ(ss.str(), "<double>");
-}
-
-TEST(JSON_Data, FloatTypeToStringReturnsCorrectString) {
-    JSON::Data data = 8.76f;
-    std::stringstream ss;
-    ss << JSON::typeToString(data);
-    EXPECT_EQ(ss.str(), "<float>");
 }
 
 TEST(JSON_Data, BoolTypeToStringReturnsCorrectString) {
@@ -373,13 +348,13 @@ TEST(JSON_Array, CanContainDifferingPrimativesViaJSONData) {
 
 TEST(JSON_Array, CanAccessJSONArrayElements) {
     JSON::Array array = { { 1 }, { 5.5f }, { true }, { "Test String" } };
-    int a = std::get<int>(array[0].value);
-    float b = std::get<float>(array[1].value);
+    int a = std::get<double>(array[0].value);
+    double b = std::get<double>(array[1].value);
     bool c = std::get<bool>(array[2].value);
     std::string d = std::get<std::string>(array[3].value);
 
-    EXPECT_EQ(std::get<int>(array[0].value), a);
-    EXPECT_EQ(std::get<float>(array[1].value), b);
+    EXPECT_EQ(std::get<double>(array[0].value), a);
+    EXPECT_EQ(std::get<double>(array[1].value), b);
     EXPECT_EQ(std::get<bool>(array[2].value), c);
     EXPECT_EQ(std::get<std::string>(array[3].value), d);
 }
@@ -387,12 +362,12 @@ TEST(JSON_Array, CanAccessJSONArrayElements) {
 TEST(JSON_Array, CanAccessArrayDirectlyViaImplicitConversionOperator) {
     JSON::Array array = { { 1 }, { 5.5f }, { true }, { "Test String" } };
     int a = array[0];
-    float b = array[1];
+    double b = array[1];
     bool c = array[2];
     std::string d = array[3];
 
-    EXPECT_EQ(std::get<int>(array[0].value), a);
-    EXPECT_EQ(std::get<float>(array[1].value), b);
+    EXPECT_EQ(std::get<double>(array[0].value), a);
+    EXPECT_EQ(std::get<double>(array[1].value), b);
     EXPECT_EQ(std::get<bool>(array[2].value), c);
     EXPECT_EQ(std::get<std::string>(array[3].value), d);
 }
@@ -435,63 +410,70 @@ TEST(JSON_File, CanAccessDifferingJSONDataPrimitivesViaKeys) {
     EXPECT_EQ(json["value7"]["nested1"], 1);
 }
 
-TEST(JSON_PRETTY_PRINT, PrintObjectParenthesis) {
-    JSON::File json =
-        JSON::Object{
-            { "product-info", JSON::Object{ { "artist", "Mateus Asato" }, { "title", "20 Killer Licks" }, { "difficulty", "Advanced" }, { "price", 29.99 }, { "release-year", "2022" } } },
-            { "tracks", JSON::Array{ JSON::Object{ { "filename", "source/videos/biggerandbetter.mp4" }, { "video-extension", "mp4" }, { "context", "Bigger And Better" }, { "type", "Solo" }, { "iteration", nullptr }, { "pretty-name", nullptr } }, JSON::Object{ { "filename", "source/videos/biggerandbetter_lick1.mp4" }, { "video-extension", "mp4" }, { "context", "Bigger And Better" }, { "type", "Lick" }, { "iteration", 1 }, { "pretty-name", "Bigger And Better Lick 1" } }, JSON::Object{ { "filename", "source/videos/biggerandbetter_lick2.mp4" }, { "video-extension", "mp4" }, { "context", "Bigger And Better" }, { "type", "Lick" }, { "iteration", 2 }, { "pretty-name", "Bigger And Better Lick 2" } }, JSON::Object{ { "filename", "source/videos/deadonthetracks.mp4" }, { "video-extension", "mp4" }, { "context", "Dead On The Tracks" }, { "type", "Solo" }, { "iteration", nullptr }, { "pretty-name", nullptr } }, JSON::Object{ { "filename", "source/videos/flogthat.mp4" }, { "video-extension", "mp4" }, { "context", "Flog That" }, { "type", "Solo" }, { "iteration", nullptr }, { "pretty-name", nullptr } } } }
-        };
+// TEST(JSON_PRETTY_PRINT, PrintObjectParenthesis) {
+//     //     JSON::Data json =
+//     //         JSON::Object{
+//     //             { "product-info", JSON::Object{ { "artist", "Mateus Asato" }, { "title", "20 Killer Licks" }, { "difficulty", "Advanced" }, { "price", 29.99 }, { "release-year", "2022" } } },
+//     //             { "tracks", JSON::Array{ JSON::Object{ { "filename", "source/videos/biggerandbetter.mp4" }, { "video-extension", "mp4" }, { "context", "Bigger And Better" }, { "type", "Solo" }, { "iteration", nullptr }, { "pretty-name", nullptr } }, JSON::Object{ { "filename", "source/videos/biggerandbetter_lick1.mp4" }, { "video-extension", "mp4" }, { "context", "Bigger And Better" }, { "type", "Lick" }, { "iteration", 1 }, { "pretty-name", "Bigger And Better Lick 1" } }, JSON::Object{ { "filename", "source/videos/biggerandbetter_lick2.mp4" }, { "video-extension", "mp4" }, { "context", "Bigger And Better" }, { "type", "Lick" }, { "iteration", 2 }, { "pretty-name", "Bigger And Better Lick 2" } }, JSON::Object{ { "filename", "source/videos/deadonthetracks.mp4" }, { "video-extension", "mp4" }, { "context", "Dead On The Tracks" }, { "type", "Solo" }, { "iteration", nullptr }, { "pretty-name", nullptr } }, JSON::Object{ { "filename", "source/videos/flogthat.mp4" }, { "video-extension", "mp4" }, { "context", "Flog That" }, { "type", "Solo" }, { "iteration", nullptr }, { "pretty-name", nullptr } } } }
+//     //         };
 
-    std::string expected = R"({
-    "product-info": {
-        "artist": "Mateus Asato",
-        "difficulty": "Advanced",
-        "price": 29.99,
-        "release-year": "2022",
-        "title": "20 Killer Licks"
-    },
-    "tracks": [
-        {
-            "context": "Bigger And Better",
-            "filename": "source/videos/biggerandbetter.mp4",
-            "iteration": null,
-            "pretty-name": null,
-            "type": "Solo",
-            "video-extension": "mp4"
-        },
-        {
-            "context": "Bigger And Better",
-            "filename": "source/videos/biggerandbetter_lick1.mp4",
-            "iteration": 1,
-            "pretty-name": "Bigger And Better Lick 1",
-            "type": "Lick",
-            "video-extension": "mp4"
-        },
-        {
-            "context": "Bigger And Better",
-            "filename": "source/videos/biggerandbetter_lick2.mp4",
-            "iteration": 2,
-            "pretty-name": "Bigger And Better Lick 2",
-            "type": "Lick",
-            "video-extension": "mp4"
-        },
-        {
-            "context": "Dead On The Tracks",
-            "filename": "source/videos/deadonthetracks.mp4",
-            "iteration": null,
-            "pretty-name": null,
-            "type": "Solo",
-            "video-extension": "mp4"
-        },
-        {
-            "context": "Flog That",
-            "filename": "source/videos/flogthat.mp4",
-            "iteration": null,
-            "pretty-name": null,
-            "type": "Solo",
-            "video-extension": "mp4"
-        }
-    ]
-})";
-    EXPECT_EQ(JSON::prettyPrint(json), expected);
-}
+//     //     std::string expected = R"({
+//     //     "product-info": {
+//     //         "artist": "Mateus Asato",
+//     //         "difficulty": "Advanced",
+//     //         "price": 29.99,
+//     //         "release-year": "2022",
+//     //         "title": "20 Killer Licks"
+//     //     },
+//     //     "tracks": [
+//     //         {
+//     //             "context": "Bigger And Better",
+//     //             "filename": "source/videos/biggerandbetter.mp4",
+//     //             "iteration": null,
+//     //             "pretty-name": null,
+//     //             "type": "Solo",
+//     //             "video-extension": "mp4"
+//     //         },
+//     //         {
+//     //             "context": "Bigger And Better",
+//     //             "filename": "source/videos/biggerandbetter_lick1.mp4",
+//     //             "iteration": 1,
+//     //             "pretty-name": "Bigger And Better Lick 1",
+//     //             "type": "Lick",
+//     //             "video-extension": "mp4"
+//     //         },
+//     //         {
+//     //             "context": "Bigger And Better",
+//     //             "filename": "source/videos/biggerandbetter_lick2.mp4",
+//     //             "iteration": 2,
+//     //             "pretty-name": "Bigger And Better Lick 2",
+//     //             "type": "Lick",
+//     //             "video-extension": "mp4"
+//     //         },
+//     //         {
+//     //             "context": "Dead On The Tracks",
+//     //             "filename": "source/videos/deadonthetracks.mp4",
+//     //             "iteration": null,
+//     //             "pretty-name": null,
+//     //             "type": "Solo",
+//     //             "video-extension": "mp4"
+//     //         },
+//     //         {
+//     //             "context": "Flog That",
+//     //             "filename": "source/videos/flogthat.mp4",
+//     //             "iteration": null,
+//     //             "pretty-name": null,
+//     //             "type": "Solo",
+//     //             "video-extension": "mp4"
+//     //         }
+//     //     ]
+//     // })";
+//     //     EXPECT_EQ(JSON::prettyPrint(json), expected);
+//     EXPECT_EQ(true, false);
+// }
+
+// TEST(JSON_Parse, BasicKeyParse) {
+//     std::string fileStr = JSON::readFile("./example2.json");
+//     JSON::Data json = JSON::parse(fileStr);
+//     EXPECT_EQ(json["name"], "found");
+// }
