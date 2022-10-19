@@ -3,6 +3,8 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <variant>
+#include "json_null.h"
 
 namespace JSON {
 
@@ -10,17 +12,19 @@ namespace JSON {
     // match the std::variant types in JSON::Data:value
     enum Type {
         JSON_NULL = 0,
+        INT,
+        UINT,
         DOUBLE,
         BOOL,
-        JSON_ARRAY,
+        STD_STRING,
         JSON_OBJECT,
-        STD_STRING
+        JSON_ARRAY,
+        NUM_TYPES
     };
-
-    std::string const types[6] = { "JSON::Null", "double", "bool", "JSON::Array", "JSON::Object", "std::string" };
 
     class Data;  // to allow typedef of Object and Array containing Data
     typedef std::map<std::string, Data> Object;
     typedef std::vector<Data> Array;
+    typedef std::variant<JSON::Null, int, unsigned int, double, bool, std::string, JSON::Object, JSON::Array> Value;
 
 };  // namespace JSON

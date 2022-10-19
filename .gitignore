@@ -3,6 +3,7 @@ build/*
 .DS_Store
 GUIDE.h
 example.json
+TODO
 
 #CMake
 CMakeLists.txt.user

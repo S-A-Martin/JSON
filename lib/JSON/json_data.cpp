@@ -2,36 +2,43 @@
 
 // Constructors
 JSON::Data::Data() : value(JSON::Null{}) {}
+
+template <typename T>
+JSON::Data::Data(T t) : value(t) {}
+
+template JSON::Data::Data(JSON::Null t);
+template JSON::Data::Data(int t);
+template JSON::Data::Data(unsigned int t);
+template JSON::Data::Data(double t);
+template JSON::Data::Data(bool t);
+template JSON::Data::Data(std::string t);
+template JSON::Data::Data(JSON::Object t);
+template JSON::Data::Data(JSON::Array t);
+
+template <>
 JSON::Data::Data(std::nullptr_t) : value(JSON::Null{}) {}
-JSON::Data::Data(JSON::Null x) : value(x) {}
-JSON::Data::Data(int x) : value((double)x) {}
-JSON::Data::Data(double x) : value(x) {}
-JSON::Data::Data(float x) : value((double)x) {}
-JSON::Data::Data(bool x) : value(x) {}
-JSON::Data::Data(JSON::Array x) : value(x) {}
-JSON::Data::Data(JSON::Object x) : value(x) {}
-JSON::Data::Data(char const* x) : value(std::string(x)) {}
-JSON::Data::Data(std::string x) : value(x) {}
+template <>
+JSON::Data::Data(float t) : value(double(t)) {}
+template <>
+JSON::Data::Data(char const* t) : value(std::string(t)) {}
 
 // Conversion JSON::Data::operators
-JSON::Data::operator JSON::Null() { return std::get<JSON::Null>(value); }
-JSON::Data::operator int() { return (int)(std::get<double>(value)); }
-JSON::Data::operator double() { return std::get<double>(value); }
-JSON::Data::operator float() { return (float)(std::get<double>(value)); }
-JSON::Data::operator bool() { return std::get<bool>(value); }
-JSON::Data::operator JSON::Array() { return std::get<JSON::Array>(value); }
-JSON::Data::operator JSON::Object() { return std::get<JSON::Object>(value); }
-JSON::Data::operator std::string() { return std::get<std::string>(value); }
+template <typename T>
+JSON::Data::operator T() { return std::get<T>(value); }
 
-// Square Bracket Overload for JSON::Array
-JSON::Data& JSON::Data::operator[](int const& elem) {
-    if (std::get_if<JSON::Array>(&value)) {
-        return std::get<JSON::Array>(value)[elem];
-    }
-    return *this;
-}
+template JSON::Data::operator JSON::Null();
+template JSON::Data::operator int();
+template JSON::Data::operator unsigned int();
+template JSON::Data::operator double();
+template JSON::Data::operator bool();
+template JSON::Data::operator std::string();
+template JSON::Data::operator JSON::Object();
+template JSON::Data::operator JSON::Array();
 
-// Square Bracket Overloads for JSON::Array
+template <>
+JSON::Data::operator float() { return (float)std::get<double>(value); }
+
+// Square Bracket Overloads for JSON::Object
 JSON::Data& JSON::Data::operator[](std::string const& key) {
     if (std::get_if<JSON::Object>(&value)) {
         return std::get<JSON::Object>(value)[key];
@@ -46,51 +53,80 @@ JSON::Data& JSON::Data::operator[](char const* key) {
     return *this;
 }
 
+// Square Bracket Overload for JSON::Array
+JSON::Data& JSON::Data::operator[](int const& elem) {
+    if (std::get_if<JSON::Array>(&value)) {
+        return std::get<JSON::Array>(value)[elem];
+    }
+    return *this;
+}
+
 // Variant index wrapper
-int const JSON::Data::index() const { return value.index(); }
+int JSON::Data::index() const { return value.index(); }
 
-// Stream JSON::Data::operator Overload
-std::ostream& JSON::operator<<(std::ostream& os, JSON::Data const& d) {
-    // print if val is JSON::Null
-    if (JSON::Null const* i = std::get_if<JSON::Null>(&d.value))
-        os << "JSON::Null";
+template <typename T>cs ..
+bool JSON::Data::isType() { return (std::get_if<T>(&value) != nullptr); }
 
-    // print if val is double
-    if (double const* i = std::get_if<double>(&d.value))
-        os << std::get<double>(d.value);
+template bool JSON::Data::isType<JSON::Null>();
+template bool JSON::Data::isType<int>();
+template bool JSON::Data::isType<unsigned int>();
+template bool JSON::Data::isType<double>();
+template bool JSON::Data::isType<bool>();
+template bool JSON::Data::isType<std::string>();
+template bool JSON::Data::isType<JSON::Object>();
+template bool JSON::Data::isType<JSON::Array>();
 
-    // print if val is bool
-    if (bool const* i = std::get_if<bool>(&d.value))
-        os << (std::get<bool>(d.value) ? "true" : "false");
+template <typename T>
+bool JSON::Data::operator==(T const& other) const {
+    if (const T* ptr = std::get_if<T>(&value)) {
+        return *ptr == other;
+    }
 
-    // print if val is JSON::Array
-    if (JSON::Array const* i = std::get_if<JSON::Array>(&d.value))
-        os << "\"Invalid Output (JSON::Array)\"";
-
-    // print if val is JSON::Object
-    if (JSON::Object const* i = std::get_if<JSON::Object>(&d.value))
-        os << "\"Invalid Output (JSON::Object)\"";
-
-    // print if val is std::string
-    if (std::string const* i = std::get_if<std::string>(&d.value))
-        os << "\"" << std::get<std::string>(d.value) << "\"";
-
-    return os;
+    return false;
 }
 
-// Equality JSON::Data::operator
+template bool JSON::Data::operator==(JSON::Null const& other) const;
+template bool JSON::Data::operator==(int const& other) const;
+template bool JSON::Data::operator==(unsigned int const& other) const;
+template bool JSON::Data::operator==(double const& other) const;
+template bool JSON::Data::operator==(bool const& other) const;
+template bool JSON::Data::operator==(std::string const& other) const;
+template bool JSON::Data::operator==(JSON::Object const& other) const;
+template bool JSON::Data::operator==(JSON::Array const& other) const;
+
+template <>
 bool JSON::Data::operator==(JSON::Data const& other) const {
-    return value == other.value;
+    return this->value == other.value;
 }
-// Inequality JSON::Data::operator
-bool JSON::Data::operator!=(JSON::Data const& other) const {
-    return value != other.value;
+
+template <>
+bool JSON::Data::operator==(std::nullptr_t const& other) const {
+    return std::get_if<JSON::Null>(&value);
 }
-// // Equality JSON::Data::operator with JSON::Null
-// bool JSON::Data::operator==(JSON::Null const& null) const {
-//     return std::get_if<JSON::Null>(&value) ? true : false;
-// }
-// // Inequality JSON::Data::operator with JSON::Null
-// bool JSON::Data::operator!=(JSON::Null const& null) const {
-//     return !std::get_if<JSON::Null>(&value) ? true : false;
-// }
+
+bool JSON::Data::operator==(char const* other) const {
+    if (const std::string* ptr = std::get_if<std::string>(&value)) {
+        return strcmp(ptr->c_str(), other) == 0;
+    }
+
+    return false;
+}
+
+template <typename T>
+bool JSON::Data::operator!=(T const& other) const {
+    return !operator==(other);
+}
+
+template bool JSON::Data::operator!=(JSON::Null const& other) const;
+template bool JSON::Data::operator!=(int const& other) const;
+template bool JSON::Data::operator!=(unsigned int const& other) const;
+template bool JSON::Data::operator!=(double const& other) const;
+template bool JSON::Data::operator!=(bool const& other) const;
+template bool JSON::Data::operator!=(std::string const& other) const;
+template bool JSON::Data::operator!=(JSON::Object const& other) const;
+template bool JSON::Data::operator!=(JSON::Array const& other) const;
+template bool JSON::Data::operator!=(JSON::Data const& other) const;
+
+bool JSON::Data::operator!=(char const* other) const {
+    return !operator==(other);
+}

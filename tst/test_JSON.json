@@ -1,0 +1,28 @@
+{
+    "Nested Object": {
+        "Array Test": [
+            5.4,
+            "Array String",
+            true,
+            null,
+            [
+                8.5,
+                "Test123",
+                false
+            ],
+            {
+                "Object Inside Array": "Yes"
+            }
+        ],
+        "Nested 1": false,
+        "Nested 2": 4.4,
+        "Nested 3": "Other String",
+        "Nested 4": -5
+    },
+    "Simple Test": null,
+    "Simple Test1": -5000,
+    "Simple Test2": 5000,
+    "Simple Test3": 6.67,
+    "Simple Test4": true,
+    "Simple Test5": "Test String"
+}

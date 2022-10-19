@@ -2,6 +2,38 @@
 
 int JSON::indentation = 0;
 
+// Stream JSON::Data::operator Overload
+std::ostream& JSON::operator<<(std::ostream& os, JSON::Data const& d) {
+    switch (d.index()) {
+    case JSON::Type::JSON_NULL:
+        os << "null";
+        break;
+    case JSON::Type::INT:
+        os << std::get<int>(d.value);
+        break;
+    case JSON::Type::UINT:
+        os << std::get<unsigned int>(d.value);
+        break;
+    case JSON::Type::DOUBLE:
+        os << std::get<double>(d.value);
+        break;
+    case JSON::Type::BOOL:
+        os << (std::get<bool>(d.value) ? "true" : "false");
+        break;
+    case JSON::Type::STD_STRING:
+        os << "\"" << std::get<std::string>(d.value) << "\"";
+        break;
+    case JSON::Type::JSON_OBJECT:
+        os << "\"Invalid Output (JSON::Object)\"";
+        break;
+    case JSON::Type::JSON_ARRAY:
+        os << "\"Invalid Output (JSON::Array)\"";
+        break;
+    }
+
+    return os;
+}
+
 std::string JSON::getInd(int indent) {
     std::string spaces;
     for (int i = 0; i < JSON::indentation * indent; i++) {
@@ -13,10 +45,10 @@ std::string JSON::getInd(int indent) {
 std::string JSON::prettyPrint(JSON::Data& data, int indent) {
     std::stringstream ss;
 
-    if (data.index() == JSON_OBJECT) {  // i.e JSON::Object a.k.a map
+    if (data.index() == JSON_OBJECT) {
         ss << "{\n";
         JSON::indentation++;
-        // iterate and print map
+
         JSON::Object::iterator it;
         JSON::Object object = std::get<JSON::Object>(data.value);
         for (it = object.begin(); it != object.end(); it++) {
