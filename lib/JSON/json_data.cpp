@@ -64,7 +64,7 @@ JSON::Data& JSON::Data::operator[](int const& elem) {
 // Variant index wrapper
 int JSON::Data::index() const { return value.index(); }
 
-template <typename T>cs ..
+template <typename T>
 bool JSON::Data::isType() { return (std::get_if<T>(&value) != nullptr); }
 
 template bool JSON::Data::isType<JSON::Null>();
