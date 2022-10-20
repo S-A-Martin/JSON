@@ -1,10 +1,21 @@
 - Tighten up const (variables and functions)
 - Tighten up visibility (Private, annoymous namespaces (does prettyPrint need to be hidden? etc)
-- Tighten up variable naming consistency
+- Tighten up variable naming consistency (indexes vs i)
 - Add more comments!
 - Add in error checking and possibly throw exceptions when parsing hits a snag or invalid JSON syn
 - Think about expectations. Do you expect calling 'prettyPrint(data)' will print the data or return a string?
 - Get rid of JSON::Object and JSON::Array with initializer_lists
 - Solve the problem where JSON::Data data = { {"Test", 5} }; is interpreter as an object and not as an array with a string and an int
 - Change int and unsigned int to accept the max values int64_t / uint64_t ? perhaps
-- Test JSON With all min and max values for numericals 
+- Test JSON With all min and max values for numericals
+
+- Add in test for array sizes
+- Add in test for empty arrays and empty objects (might already be done)
+- Check there's enough array tests
+- Check for pass by const ref and pass by value where needed
+
+
+- Think about general public API... JSON::readFile, JSON::saveFile and JSON::print. Also consider << for Data to allow std::cout << data.
+- Think about printing on one line instead of pretty printing. (maybe std::cout << std::endl is in a loop with a param? so we can do i < 0 for no new lines)
+- Change JSON::readFile to return a JSON::Data instead of a string.
+- Think about aux functions like Data::clear()
