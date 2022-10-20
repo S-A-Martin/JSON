@@ -44,6 +44,8 @@ namespace JSON {
         bool operator!=(const char* other) const;
 
         size_t size();
+
+        void clear();
     };  // class Data
 
 };  // namespace JSON

@@ -619,3 +619,18 @@ TEST(JSONDataSize, DataSizeWithValueArrayReturnsCorrectSize) {
     JSON::Data data = JSON::Array{ "Test1", 5.5, false, 500 };
     EXPECT_EQ(data.size(), 4);
 }
+
+TEST(JSONDataClear, ClearSetsTheValueToJSONNull) {
+    JSON::Data data = JSON::Array{ "Test1", 5.5, false, 500 };
+    EXPECT_EQ(data.index(), JSON::Type::JSON_ARRAY);
+    data.clear();
+    EXPECT_EQ(data.index(), JSON::Type::JSON_NULL);
+}
+
+TEST(JSONDataClear, ClearSetsTheSizeToZero) {
+    JSON::Data data = JSON::Array{ "Test1", 5.5, false, 500 };
+    EXPECT_EQ(data.index(), JSON::Type::JSON_ARRAY);
+    EXPECT_EQ(data.size(), 4);
+    data.clear();
+    EXPECT_EQ(data.size(), 0);
+}

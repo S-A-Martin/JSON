@@ -149,3 +149,7 @@ size_t JSON::Data::size() {
 
     return 0;
 }
+
+void JSON::Data::clear() {
+    value = JSON::Null{};
+}
