@@ -571,3 +571,51 @@ TEST(JSONData, CanAccessDataValueArrayViaSubscriptOperator) {
     EXPECT_EQ(data[1], "Test1");
     EXPECT_EQ(data[2], 5.5);
 }
+
+TEST(JSONDataSize, DataSizeWithValueJSONNullReturnsZeroSize) {
+    JSON::Data data = JSON::Null{};
+    EXPECT_EQ(data.size(), 0);
+}
+TEST(JSONDataSize, DataSizeWithValueIntReturnsSizeOne) {
+    JSON::Data data = 60;
+    EXPECT_EQ(data.size(), 1);
+}
+
+TEST(JSONDataSize, DataSizeWithValueUnsignedIntReturnsSizeOne) {
+    JSON::Data data = 60U;
+    EXPECT_EQ(data.size(), 1);
+}
+
+TEST(JSONDataSize, DataSizeWithValueDoubleReturnsSizeOne) {
+    JSON::Data data = 60;
+    EXPECT_EQ(data.size(), 1);
+}
+TEST(JSONDataSize, DataSizeWithValueBoolReturnsSizeOne) {
+    JSON::Data data = true;
+    EXPECT_EQ(data.size(), 1);
+}
+TEST(JSONDataSize, DataSizeWithValueStdStringReturnsSizeOne) {
+    JSON::Data data = "Size Test";
+    EXPECT_EQ(data.size(), 1);
+}
+
+TEST(JSONDataSize, DataSizeWithValueEmptyObjectReturnsZeroSize) {
+    JSON::Data data = JSON::Object{};
+    EXPECT_EQ(data.size(), 0);
+}
+
+TEST(JSONDataSize, DataSizeWithValueObjectReturnsCorrectSize) {
+    JSON::Data data = JSON::Object{ { "Test1", 5.5 },
+                                    { "Test2", 500 } };
+    EXPECT_EQ(data.size(), 2);
+}
+
+TEST(JSONDataSize, DataSizeWithValueEmptyArrayReturnsZeroSize) {
+    JSON::Data data = JSON::Array{};
+    EXPECT_EQ(data.size(), 0);
+}
+
+TEST(JSONDataSize, DataSizeWithValueArrayReturnsCorrectSize) {
+    JSON::Data data = JSON::Array{ "Test1", 5.5, false, 500 };
+    EXPECT_EQ(data.size(), 4);
+}

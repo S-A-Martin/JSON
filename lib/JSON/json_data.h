@@ -42,6 +42,8 @@ namespace JSON {
         template <typename T>
         bool operator!=(T const& other) const;
         bool operator!=(const char* other) const;
+
+        size_t size();
     };  // class Data
 
 };  // namespace JSON

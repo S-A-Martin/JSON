@@ -130,3 +130,22 @@ template bool JSON::Data::operator!=(JSON::Data const& other) const;
 bool JSON::Data::operator!=(char const* other) const {
     return !operator==(other);
 }
+
+size_t JSON::Data::size() {
+    switch (value.index()) {
+    case JSON::Type::JSON_NULL:
+        return 0;
+        break;
+    case JSON::Type::JSON_OBJECT:
+        return std::get<JSON::Object>(value).size();
+        break;
+    case JSON::Type::JSON_ARRAY:
+        return std::get<JSON::Array>(value).size();
+        break;
+    default:
+        return 1;
+        break;
+    }
+
+    return 0;
+}
