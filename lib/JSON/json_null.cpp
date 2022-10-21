@@ -1,11 +1,13 @@
 #include "json_null.h"
 
-JSON::Null::Null() {}
+namespace JSON {
+    Null::Null() {}
 
-bool const JSON::Null::operator==(JSON::Null const& other) const {
-    return true;
-}
-// Inequality JSON::Data::operator
-bool const JSON::Null::operator!=(JSON::Null const& other) const {
-    return false;
-}
+    bool const Null::operator==(Null const& other) const {
+        return true;
+    }
+    // Inequality Data::operator
+    bool const Null::operator!=(Null const& other) const {
+        return false;
+    }
+}  // namespace JSON

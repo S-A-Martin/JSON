@@ -25,6 +25,6 @@ namespace JSON {
     class Data;  // to allow typedef of Object and Array containing Data
     typedef std::map<std::string, Data> Object;
     typedef std::vector<Data> Array;
-    typedef std::variant<JSON::Null, int, unsigned int, double, bool, std::string, JSON::Object, JSON::Array> Value;
+    typedef std::variant<Null, int, unsigned int, double, bool, std::string, Object, Array> Value;
 
 };  // namespace JSON

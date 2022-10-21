@@ -99,6 +99,7 @@ namespace JSON {
 
             while (str[index] != '}' && index < str.size()) {
                 LOG(str[index]);
+                
                 if (charIsInString(str[index], "-0123456789.") && haveKey) {
                     object[key] = parseNumerical(str, index);
                     key = "";

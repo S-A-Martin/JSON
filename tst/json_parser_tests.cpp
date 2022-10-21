@@ -2,9 +2,9 @@
 #include "json.h"
 
 TEST(JSONParser, ReadFileCreatesCorrectString) {
-    // clang-format off
     std::string result = JSON::readFile("../tst/test_JSON.json");
     std::string expected =
+        // clang-format off
 R"({
     "Nested Object": {
         "Array Test": [
@@ -33,9 +33,9 @@ R"({
     "Simple Test4": true,
     "Simple Test5": "Test String"
 })";
+    // clang-format on
 
     EXPECT_EQ(result, expected);
-    // clang-format on
 }
 
 TEST(JSONParser, parseCreatesCorrectObject) {

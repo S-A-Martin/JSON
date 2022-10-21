@@ -1,5 +1,5 @@
 #include "json_util.h"
 
-std::string const JSON::typeToString(JSON::Data const& data) { return { "<" + types[data.index()] + ">" }; }
-
-
+namespace JSON {
+    std::string const typeToString(Data const& data) { return { "<" + types[data.index()] + ">" }; }
+}  // namespace JSON

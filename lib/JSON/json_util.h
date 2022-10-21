@@ -12,6 +12,6 @@ namespace JSON {
 
     std::string const types[Type::NUM_TYPES] = { "JSON::Null", "int", "unsigned int", "double", "bool", "std::string", "JSON::Object", "JSON::Array" };
 
-    std::string const typeToString(JSON::Data const& data);
+    std::string const typeToString(Data const& data);
 
 }  // namespace JSON

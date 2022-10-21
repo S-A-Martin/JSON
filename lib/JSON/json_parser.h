@@ -6,8 +6,8 @@ namespace JSON {
 
     std::string readFile(char const* path);
 
-    JSON::Data parse(std::string const& str);
+    Data parse(std::string const& str);
 
-    void saveFile(JSON::Data const& data, char const* path);
+    void saveFile(Data const& data, char const* path);
 
 };  // namespace JSON
