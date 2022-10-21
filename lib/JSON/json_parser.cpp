@@ -15,34 +15,34 @@ namespace JSON {
 
     namespace {  // Annoymous to limit to json_parser.cpp
 
-        Data parseObject(Data& object, std::string& str, int& index);
+        Data parseObject(Data& object, std::string const& str, int& index);
 
-        bool charIsInString(char c, std::string str) {
+        bool charIsInString(char const c, std::string const& str) {
             return str.find(c) != std::string::npos;
         }
 
-        bool isWhiteSpace(char c) {
+        bool isWhiteSpace(char const c) {
             // DANGER! Check for leading space to account for char ' '
             return charIsInString(c, " \t\n\f\r\v");
         }
 
-        std::string parseString(std::string str, int& index) {
+        std::string parseString(std::string const& str, int& index) {
             std::string outString = "";
-            index++;
+            ++index;
             while (str[index] != '\"' && index < str.size()) {
                 LOG(str[index]);
                 outString += str[index];
-                index++;
+                ++index;
             }
             return outString;
         }
 
-        Data parseNumerical(std::string str, int& index) {
+        Data parseNumerical(std::string const& str, int& index) {
             std::string tempStr = "";
             while (charIsInString(str[index], "-0123456789.") && index < str.size()) {
                 LOG(str[index]);
                 tempStr += str[index];
-                index++;
+                ++index;
             }
             if (charIsInString('.', tempStr)) {
                 return std::stod(tempStr);
@@ -50,7 +50,7 @@ namespace JSON {
             return std::stoi(tempStr);
         }
 
-        Data parseArray(Array& array, std::string& str, int& index) {
+        Data parseArray(Array& array, std::string const& str, int& index) {
             while (str[index] != ']' && index < str.size()) {
                 LOG(str[index]);
                 if (charIsInString(str[index], "-0123456789.")) {
@@ -88,12 +88,12 @@ namespace JSON {
                 default:
                     break;
                 }
-                index++;
+                ++index;
             }
             return array;
         }
 
-        Data parseObject(Data& object, std::string& str, int& index) {
+        Data parseObject(Data& object, std::string const& str, int& index) {
             bool haveKey = false;
             std::string key = "";
 
@@ -178,7 +178,7 @@ namespace JSON {
                     break;
                 }
 
-                index++;
+                ++index;
             }
             return object;
         }
@@ -192,24 +192,24 @@ namespace JSON {
         return ss.str();
     }
 
-    Data parse(std::string& jsonAsString) {
+    Data parse(std::string const& jsonAsString) {
         Data object = Object{};
-        int i = 0;
+        int index = 0;
         LOG(jsonAsString[i]);
 
-        while (isWhiteSpace(jsonAsString[i] && i < jsonAsString.size())) {
-            i++;
+        while (isWhiteSpace(jsonAsString[index] && index < jsonAsString.size())) {
+            index++;
             LOG(jsonAsString[i]);
         }
 
-        if (jsonAsString[i] != '{') {
+        if (jsonAsString[index] != '{') {
             return Null{};
         } /* TODO: throw or report an error */
 
-        return parseObject(object, jsonAsString, ++i);
+        return parseObject(object, jsonAsString, ++index);
     }
 
-    void saveFile(Data& data, const char* saveFilepath) {
+    void saveFile(Data const& data, char const* saveFilepath) {
         std::ofstream file;
         file.open(saveFilepath, std::ofstream::out | std::ofstream::trunc);
         file << prettyPrint(data);

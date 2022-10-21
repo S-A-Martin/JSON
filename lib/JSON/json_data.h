@@ -33,7 +33,7 @@ namespace JSON {
         Data& operator[](int const& elem);
 
         // Variant index wrapper
-        int const index() const;
+        int index() const;
 
         template <typename T>
         bool isType() const;
@@ -46,12 +46,12 @@ namespace JSON {
         bool operator!=(T const& other) const;
         bool operator!=(char const* other) const;
 
-        size_t const size() const;
+        size_t size() const;
 
         void clear();
 
       private:
-        int const sumCollectionSize(Data const&) const;
+        int sumCollectionSize(Data const&) const;
 
     };  // class Data
 

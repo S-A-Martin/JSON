@@ -83,7 +83,7 @@ JSON::Data& JSON::Data::operator[](int const& elem) {
 }
 
 // Variant index wrapper
-int const JSON::Data::index() const { return value.index(); }
+int JSON::Data::index() const { return value.index(); }
 
 template <typename T>
 bool JSON::Data::isType() const { return (std::get_if<T>(&value) != nullptr); }
@@ -152,7 +152,7 @@ bool JSON::Data::operator!=(char const* other) const {
     return !operator==(other);
 }
 
-size_t const JSON::Data::size() const {
+size_t JSON::Data::size() const {
     switch (value.index()) {
     case JSON::Type::JSON_OBJECT:
     case JSON::Type::JSON_ARRAY:
@@ -173,7 +173,7 @@ size_t const JSON::Data::size() const {
     }
 }
 
-int const JSON::Data::sumCollectionSize(JSON::Data const& data) const {
+int JSON::Data::sumCollectionSize(JSON::Data const& data) const {
     /* Recursively sums the size of the current JSON::Object (a.k.a std::map)
        or JSON::Array (a.k.a std::vector) with the sum of any nested Objects or Arrays.
     */
