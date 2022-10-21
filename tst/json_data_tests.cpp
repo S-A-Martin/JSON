@@ -604,10 +604,11 @@ TEST(JSONDataSize, DataSizeWithValueEmptyObjectReturnsZeroSize) {
     EXPECT_EQ(data.size(), 0);
 }
 
-TEST(JSONDataSize, DataSizeWithValueObjectReturnsCorrectSize) {
+TEST(JSONDataSize, DataSizeWithValueNonNestedObjectReturnsCorrectSize) {
     JSON::Data data = JSON::Object{ { "Test1", 5.5 },
-                                    { "Test2", 500 } };
-    EXPECT_EQ(data.size(), 2);
+                                    { "Test2", nullptr },
+                                    { "Test3", 500 } };
+    EXPECT_EQ(data.size(), 3);
 }
 
 TEST(JSONDataSize, DataSizeWithValueEmptyArrayReturnsZeroSize) {
@@ -615,9 +616,30 @@ TEST(JSONDataSize, DataSizeWithValueEmptyArrayReturnsZeroSize) {
     EXPECT_EQ(data.size(), 0);
 }
 
-TEST(JSONDataSize, DataSizeWithValueArrayReturnsCorrectSize) {
-    JSON::Data data = JSON::Array{ "Test1", 5.5, false, 500 };
-    EXPECT_EQ(data.size(), 4);
+TEST(JSONDataSize, DataSizeWithValueNonNestedArrayReturnsCorrectSize) {
+    JSON::Data data = JSON::Array{ "Test1", 5.5, nullptr, false, 500 };
+    EXPECT_EQ(data.size(), 5);
+}
+
+TEST(JSONDataSize, DataSizeWithValueMixedNestedReturnsCorrectSize) {
+    // clang-format off
+    JSON::Data data =
+
+    JSON::Object{ /* Size 3 */
+        { "Test1", 5.5 }, 
+        { "Test2", 500 },
+        { "NestedArray", JSON::Array{  "Test3", /* Size 4 */
+                                       5.5,
+                                       false,
+                                       JSON::Object{ { "Test4", 5.5 }, /* Size 2 */
+                                                     { "Test5", 500 }
+                                       }
+                         }
+        }
+        };
+
+    EXPECT_EQ(data.size(), 9);
+    // clang-format on
 }
 
 TEST(JSONDataClear, ClearSetsTheValueToJSONNull) {

@@ -8,9 +8,6 @@
 - Solve the problem where JSON::Data data = { {"Test", 5} }; is interpreter as an object and not as an array with a string and an int
 - Change int and unsigned int to accept the max values int64_t / uint64_t ? perhaps
 - Test JSON With all min and max values for numericals
-
-- Add in test for array sizes
-- Add in test for empty arrays and empty objects (might already be done)
 - Check there's enough array tests
 - Check for pass by const ref and pass by value where needed
 

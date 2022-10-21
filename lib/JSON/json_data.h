@@ -46,6 +46,10 @@ namespace JSON {
         size_t size();
 
         void clear();
+
+        private:
+        
+        int sumCollectionSize(Data&);
     };  // class Data
 
 };  // namespace JSON

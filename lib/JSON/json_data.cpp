@@ -133,21 +133,48 @@ bool JSON::Data::operator!=(char const* other) const {
 
 size_t JSON::Data::size() {
     switch (value.index()) {
-    case JSON::Type::JSON_NULL:
-        return 0;
-        break;
     case JSON::Type::JSON_OBJECT:
-        return std::get<JSON::Object>(value).size();
-        break;
     case JSON::Type::JSON_ARRAY:
-        return std::get<JSON::Array>(value).size();
+        return sumCollectionSize(*this);
         break;
-    default:
+
+    case JSON::Type::INT:
+    case JSON::Type::UINT:
+    case JSON::Type::BOOL:
+    case JSON::Type::DOUBLE:
+    case JSON::Type::STD_STRING:
         return 1;
         break;
+
+    case JSON::Type::JSON_NULL:
+    default:
+        return 0;
+    }
+}
+
+int JSON::Data::sumCollectionSize(JSON::Data& data) {
+    /* Recursively sums the size of the current JSON::Object (a.k.a std::map)
+       or JSON::Array (a.k.a std::vector) with the sum of any nested Objects or Arrays.
+    */
+
+    int sumSize = 0;
+
+    if (data.index() == JSON::Type::JSON_OBJECT) {
+        JSON::Object& object = std::get<JSON::Object>(data.value);
+        for (auto& [mapKey, mapValue] : object) {
+            sumSize += sumCollectionSize(mapValue);
+        }
+        sumSize += object.size();  // object.size() a.k.a std::map::size();
+    }
+    else if (data.index() == JSON::Type::JSON_ARRAY) {
+        JSON::Array& array = std::get<JSON::Array>(data.value);
+        for (auto& arrValue : array) {
+            sumSize += sumCollectionSize(arrValue);
+        }
+        sumSize += array.size();  // array.size() a.k.a std::vector::size();
     }
 
-    return 0;
+    return sumSize;
 }
 
 void JSON::Data::clear() {
