@@ -62,19 +62,19 @@ JSON::Data& JSON::Data::operator[](int const& elem) {
 }
 
 // Variant index wrapper
-int JSON::Data::index() const { return value.index(); }
+int const JSON::Data::index() const { return value.index(); }
 
 template <typename T>
-bool JSON::Data::isType() { return (std::get_if<T>(&value) != nullptr); }
+bool JSON::Data::isType() const { return (std::get_if<T>(&value) != nullptr); }
 
-template bool JSON::Data::isType<JSON::Null>();
-template bool JSON::Data::isType<int>();
-template bool JSON::Data::isType<unsigned int>();
-template bool JSON::Data::isType<double>();
-template bool JSON::Data::isType<bool>();
-template bool JSON::Data::isType<std::string>();
-template bool JSON::Data::isType<JSON::Object>();
-template bool JSON::Data::isType<JSON::Array>();
+template bool JSON::Data::isType<JSON::Null>() const;
+template bool JSON::Data::isType<int>() const;
+template bool JSON::Data::isType<unsigned int>() const;
+template bool JSON::Data::isType<double>() const;
+template bool JSON::Data::isType<bool>() const;
+template bool JSON::Data::isType<std::string>() const;
+template bool JSON::Data::isType<JSON::Object>() const;
+template bool JSON::Data::isType<JSON::Array>() const;
 
 template <typename T>
 bool JSON::Data::operator==(T const& other) const {
@@ -131,7 +131,7 @@ bool JSON::Data::operator!=(char const* other) const {
     return !operator==(other);
 }
 
-size_t JSON::Data::size() {
+size_t const JSON::Data::size() const {
     switch (value.index()) {
     case JSON::Type::JSON_OBJECT:
     case JSON::Type::JSON_ARRAY:
@@ -152,7 +152,7 @@ size_t JSON::Data::size() {
     }
 }
 
-int JSON::Data::sumCollectionSize(JSON::Data& data) {
+int const JSON::Data::sumCollectionSize(JSON::Data const& data) const {
     /* Recursively sums the size of the current JSON::Object (a.k.a std::map)
        or JSON::Array (a.k.a std::vector) with the sum of any nested Objects or Arrays.
     */
@@ -160,15 +160,15 @@ int JSON::Data::sumCollectionSize(JSON::Data& data) {
     int sumSize = 0;
 
     if (data.index() == JSON::Type::JSON_OBJECT) {
-        JSON::Object& object = std::get<JSON::Object>(data.value);
-        for (auto& [mapKey, mapValue] : object) {
+        JSON::Object const& object = std::get<JSON::Object>(data.value);
+        for (auto const& [mapKey, mapValue] : object) {
             sumSize += sumCollectionSize(mapValue);
         }
         sumSize += object.size();  // object.size() a.k.a std::map::size();
     }
     else if (data.index() == JSON::Type::JSON_ARRAY) {
-        JSON::Array& array = std::get<JSON::Array>(data.value);
-        for (auto& arrValue : array) {
+        JSON::Array const& array = std::get<JSON::Array>(data.value);
+        for (auto const& arrValue : array) {
             sumSize += sumCollectionSize(arrValue);
         }
         sumSize += array.size();  // array.size() a.k.a std::vector::size();

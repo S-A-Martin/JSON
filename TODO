@@ -15,4 +15,4 @@
 - Think about general public API... JSON::readFile, JSON::saveFile and JSON::print. Also consider << for Data to allow std::cout << data.
 - Think about printing on one line instead of pretty printing. (maybe std::cout << std::endl is in a loop with a param? so we can do i < 0 for no new lines)
 - Change JSON::readFile to return a JSON::Data instead of a string.
-- Think about aux functions like Data::clear()
+- Think about aux functions like Data::add() Data::remove()

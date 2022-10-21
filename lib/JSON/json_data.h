@@ -30,26 +30,26 @@ namespace JSON {
         Data& operator[](int const& elem);
 
         // Variant index wrapper
-        int index() const;
+        int const index() const;
 
         template <typename T>
-        bool isType();
+        bool isType() const;
 
         template <typename T>
         bool operator==(T const& other) const;
-        bool operator==(const char* other) const;
+        bool operator==(char const* other) const;
 
         template <typename T>
         bool operator!=(T const& other) const;
-        bool operator!=(const char* other) const;
+        bool operator!=(char const* other) const;
 
-        size_t size();
+        size_t const size() const;
 
         void clear();
 
-        private:
-        
-        int sumCollectionSize(Data&);
+      private:
+        int const sumCollectionSize(Data const&) const;
+
     };  // class Data
 
 };  // namespace JSON
