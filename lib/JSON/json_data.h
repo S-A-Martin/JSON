@@ -23,10 +23,13 @@ namespace JSON {
         operator T();
 
         // Index Operator Overloads for Object
+        Data const& operator[](std::string const& key) const;
         Data& operator[](std::string const& key);
+        Data const& operator[](char const* key) const;
         Data& operator[](char const* key);
 
         // Index Operator Overload for Array
+        Data const& operator[](int const& elem) const;
         Data& operator[](int const& elem);
 
         // Variant index wrapper

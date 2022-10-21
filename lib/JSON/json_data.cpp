@@ -39,24 +39,45 @@ template <>
 JSON::Data::operator float() { return (float)std::get<double>(value); }
 
 // Square Bracket Overloads for JSON::Object
+JSON::Data const& JSON::Data::operator[](std::string const& key) const {
+    if (const JSON::Object* object = std::get_if<JSON::Object>(&value)) {
+        return (*object).at(key);
+    }
+    return *this;
+}
+
 JSON::Data& JSON::Data::operator[](std::string const& key) {
-    if (std::get_if<JSON::Object>(&value)) {
-        return std::get<JSON::Object>(value)[key];
+    if (JSON::Object* object = std::get_if<JSON::Object>(&value)) {
+        return (*object)[key];
+    }
+    return *this;
+}
+
+JSON::Data const& JSON::Data::operator[](char const* key) const {
+    if (const JSON::Object* object = std::get_if<JSON::Object>(&value)) {
+        return (*object).at(key);
     }
     return *this;
 }
 
 JSON::Data& JSON::Data::operator[](char const* key) {
-    if (std::get_if<JSON::Object>(&value)) {
-        return std::get<JSON::Object>(value)[key];
+    if (JSON::Object* object = std::get_if<JSON::Object>(&value)) {
+        return (*object)[key];
     }
     return *this;
 }
 
 // Square Bracket Overload for JSON::Array
+JSON::Data const& JSON::Data::operator[](int const& elem) const {
+    if (const JSON::Array* array = std::get_if<JSON::Array>(&value)) {
+        return (*array)[elem];
+    }
+    return *this;
+}
+
 JSON::Data& JSON::Data::operator[](int const& elem) {
-    if (std::get_if<JSON::Array>(&value)) {
-        return std::get<JSON::Array>(value)[elem];
+    if (JSON::Array* array = std::get_if<JSON::Array>(&value)) {
+        return (*array)[elem];
     }
     return *this;
 }

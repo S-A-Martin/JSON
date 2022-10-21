@@ -1,4 +1,5 @@
 - Tighten up const (variables and functions)
+- Add in unit tests for const Data
 - Tighten up visibility (Private, annoymous namespaces (does prettyPrint need to be hidden? etc)
 - Tighten up variable naming consistency (indexes vs i)
 - Add more comments!

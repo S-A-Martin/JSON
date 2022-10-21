@@ -557,17 +557,53 @@ TEST(JSONDataValueJSONArray, EqualityWithNonJSONArrayShouldBeFalse) {
     EXPECT_TRUE(data != other3);
 }
 
-TEST(JSONData, CanAccessDataValueObjectViaSubscriptOperator) {
+TEST(JSONData, CanAccessDataValueObjectViaSubscriptOperatorWithConstCharPtr) {
     JSON::Data data = JSON::Object{ { "Test1", 5.5 },
                                     { "Test2", 500 } };
 
     EXPECT_EQ(data["Test1"], 5.5);
     EXPECT_EQ(data["Test2"], 500);
 }
+
+TEST(JSONData, CanAccessConstDataValueObjectViaSubscriptOperatorWithConstCharPtr) {
+    const JSON::Data data = JSON::Object{ { "Test1", 5.5 },
+                                          { "Test2", 500 } };
+
+    EXPECT_EQ(data["Test1"], 5.5);
+    EXPECT_EQ(data["Test2"], 500);
+}
+
+TEST(JSONData, CanAccessDataValueObjectViaSubscriptOperatorWithStdString) {
+    JSON::Data data = JSON::Object{ { "Test1", 5.5 },
+                                    { "Test2", 500 } };
+    std::string key1 = "Test1";
+    std::string key2 = "Test2";
+
+    EXPECT_EQ(data[key1], 5.5);
+    EXPECT_EQ(data[key2], 500);
+}
+
+TEST(JSONData, CanAccessConstDataValueObjectViaSubscriptOperatorWithStdString) {
+    const JSON::Data data = JSON::Object{ { "Test1", 5.5 },
+                                          { "Test2", 500 } };
+    std::string key1 = "Test1";
+    std::string key2 = "Test2";
+
+    EXPECT_EQ(data[key1], 5.5);
+    EXPECT_EQ(data[key2], 500);
+}
+
 TEST(JSONData, CanAccessDataValueArrayViaSubscriptOperator) {
     JSON::Data data = JSON::Array{ { true, "Test1", 5.5 } };
     bool result = data[0];
     EXPECT_EQ(result, true);
+    EXPECT_EQ(data[1], "Test1");
+    EXPECT_EQ(data[2], 5.5);
+}
+
+TEST(JSONData, CanAccessConstDataValueArrayViaSubscriptOperator) {
+    const JSON::Data data = JSON::Array{ { true, "Test1", 5.5 } };
+    EXPECT_EQ(data[0], true);
     EXPECT_EQ(data[1], "Test1");
     EXPECT_EQ(data[2], 5.5);
 }
