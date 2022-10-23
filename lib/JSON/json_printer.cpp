@@ -13,18 +13,12 @@ namespace JSON {
             return spaces;
         }
 
-        std::string prettyPrint(Array const& array, int indent) {
-            std::stringstream ss;
-            ss << "[\n";
-            ++indentWidth;
-            for (int i = 0; i < array.size(); ++i) {
-                ss << getIndentation(indent) << prettyPrint(array[i], indent);
-                if (i != array.size() - 1) { ss << ","; }
-                ss << "\n";
+        std::string getNewLines(int numNewLines) {
+            std::string newLines;
+            for (int i = 0; i < numNewLines; ++i) {
+                newLines += '\n';
             }
-            indentWidth--;
-            ss << getIndentation(indent) << "]";
-            return ss.str();
+            return newLines;
         }
     }  // namespace
 
@@ -60,27 +54,43 @@ namespace JSON {
         return os;
     }
 
-    std::string prettyPrint(Data const& data, int indent) {
+    std::string prettyPrint(Data const& data, int indent, int newLines) {
         std::stringstream ss;
 
         if (data.index() == JSON_OBJECT) {
-            ss << "{\n";
-            ++indentWidth;
-
-            Object::const_iterator it;
             Object const object = std::get<Object>(data.value);
+            ss << "{" << getNewLines(newLines);
+            ++indentWidth;
+            Object::const_iterator it;
             for (it = object.begin(); it != object.end(); ++it) {
                 ss << getIndentation(indent) << "\"" << it->first << "\": " << prettyPrint(it->second, indent);
                 if (it != std::prev(object.end(), 1)) { ss << ","; }
-                ss << "\n";
+                else if (indent == 1) { ss << " "; }  // edge case for flat printing
+                ss << getNewLines(newLines);
             }
             indentWidth--;
             ss << getIndentation(indent) << "}";
         }
 
-        else if (data.index() == JSON_ARRAY) { ss << prettyPrint(std::get<Array>(data.value), indent); }
+        else if (data.index() == JSON_ARRAY) {
+            Array const array = std::get<Array>(data.value);
+            ss << "[" << getNewLines(newLines);
+            ++indentWidth;
+            for (int i = 0; i < array.size(); ++i) {
+                ss << getIndentation(indent) << prettyPrint(array[i], indent);
+                if (i != array.size() - 1) { ss << ","; }
+                else if (indent == 1) { ss << " "; }  // edge case for flat printing
+                ss << getNewLines(newLines);
+            }
+            indentWidth--;
+            ss << getIndentation(indent) << "]";
+        }
         else { ss << data; }
         return ss.str();
+    }
+
+    std::string print(Data const& data) {
+        return prettyPrint(data, 1, 0);
     }
 
 }  // namespace JSON

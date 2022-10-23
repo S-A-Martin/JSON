@@ -184,3 +184,18 @@ R"({
     EXPECT_EQ(dataStr, expected);
     // clang-format on
 }
+
+TEST(JSONPrinter, FlatPrintingDataWithComplexJSONObjectProducesCorrectString) {
+    JSON::Data data = JSON::Object{
+        { "Simple Test", nullptr },
+        { "Simple Test1", -5000 },
+        { "Simple Test2", 5000U },
+        { "Simple Test3", 6.67 },
+        { "Simple Test4", true },
+        { "Simple Test5", "Test String" }
+    };
+
+    std::string dataStr = JSON::flatPrint(data);
+    std::string expected = R"({ "Simple Test": null, "Simple Test1": -5000, "Simple Test2": 5000, "Simple Test3": 6.67, "Simple Test4": true, "Simple Test5": "Test String" })";
+    EXPECT_EQ(dataStr, expected);
+}
