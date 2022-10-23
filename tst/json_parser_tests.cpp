@@ -1,46 +1,8 @@
 #include "gtest.h"
 #include "json.h"
 
-TEST(JSONParser, ReadFileCreatesCorrectString) {
-    std::string result = JSON::readFile("../tst/test_JSON.json");
-    std::string expected =
-        // clang-format off
-R"({
-    "Nested Object": {
-        "Array Test": [
-            5.4,
-            "Array String",
-            true,
-            null,
-            [
-                8.5,
-                "Test123",
-                false
-            ],
-            {
-                "Object Inside Array": "Yes"
-            }
-        ],
-        "Nested 1": false,
-        "Nested 2": 4.4,
-        "Nested 3": "Other String",
-        "Nested 4": -5
-    },
-    "Simple Test": null,
-    "Simple Test1": -5000,
-    "Simple Test2": 5000,
-    "Simple Test3": 6.67,
-    "Simple Test4": true,
-    "Simple Test5": "Test String"
-})";
-    // clang-format on
-
-    EXPECT_EQ(result, expected);
-}
-
 TEST(JSONParser, parseCreatesCorrectObject) {
-    std::string jsonString = JSON::readFile("../tst/test_JSON.json");
-    JSON::Data data = JSON::parse(jsonString);
+    JSON::Data data = JSON::parseFile("../tst/test_JSON.json");
 
     EXPECT_EQ(data["Simple Test"], nullptr);
     EXPECT_EQ(data["Simple Test1"], -5000);
@@ -63,14 +25,12 @@ TEST(JSONParser, parseCreatesCorrectObject) {
 }
 
 TEST(JSONParser, SaveCreatesCorrectObject) {
-    std::string preSaveString = JSON::readFile("../tst/test_JSON.json");
-    JSON::Data dataPreSave = JSON::parse(preSaveString);
+    JSON::Data dataPreSave = JSON::parseFile("../tst/test_JSON.json");
 
     dataPreSave["Nested Object"]["Array Test"][5]["Object Inside Array"] = "Edited Value";
     JSON::saveFile(dataPreSave, "../tst/save_test.json");
 
-    std::string postSaveString = JSON::readFile("../tst/save_test.json");
-    JSON::Data dataPostSave = JSON::parse(postSaveString);
+    JSON::Data dataPostSave = JSON::parseFile("../tst/save_test.json");
     std::remove("../tst/save_test.json");
 
     EXPECT_EQ(dataPreSave, dataPostSave);

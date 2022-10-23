@@ -4,9 +4,7 @@
 
 namespace JSON {
 
-    std::string readFile(char const* path);
-
-    Data parse(std::string const& str);
+    Data parseFile(char const* path);
 
     void saveFile(Data const& data, char const* path);
 

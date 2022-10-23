@@ -41,14 +41,21 @@ TEST(JSONDataValueJSONObject, StreamOverloadShouldPrintCorrectString) {
     std::stringstream ss;
     JSON::Data data = JSON::Object{ { "Test String", 1 }, { "Test String 2", 5.5 }, { "Test String 3", true } };
     ss << data;
-    EXPECT_EQ(ss.str(), "\"Invalid Output (JSON::Object)\"");
+    std::string expected =
+        // clang format off
+        R"({
+    "Test String": 1,
+    "Test String 2": 5.5,
+    "Test String 3": true
+})";
+    EXPECT_EQ(ss.str(), expected);
 }
 
 TEST(JSONDataValueJSONArray, StreamOverloadShouldPrintCorrectString) {
     std::stringstream ss;
     JSON::Data data = JSON::Array{ "Test String", 1, 6.5, false, 7U };
     ss << data;
-    EXPECT_EQ(ss.str(), "\"Invalid Output (JSON::Array)\"");
+    EXPECT_EQ(ss.str(), R"([ "Test String", 1, 6.5, false, 7 ])");
 }
 
 TEST(JSONPrinter, PrettyPrintingDataWithJSONNullProducesCorrectString) {
@@ -100,8 +107,8 @@ TEST(JSONPrinter, PrettyPrintingDataWithSimpleJSONObjectProducesCorrectString) {
 
     std::string dataStr = JSON::prettyPrint(data);
 
+    // clang-format off
     std::string expected =
-        // clang-format off
 R"({
     "Simple Test": true
 })";
@@ -195,7 +202,7 @@ TEST(JSONPrinter, FlatPrintingDataWithComplexJSONObjectProducesCorrectString) {
         { "Simple Test5", "Test String" }
     };
 
-    std::string dataStr = JSON::flatPrint(data);
+    std::string dataStr = JSON::print(data);
     std::string expected = R"({ "Simple Test": null, "Simple Test1": -5000, "Simple Test2": 5000, "Simple Test3": 6.67, "Simple Test4": true, "Simple Test5": "Test String" })";
     EXPECT_EQ(dataStr, expected);
 }

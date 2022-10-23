@@ -5,7 +5,7 @@ namespace JSON {
         Null();
 
         bool const operator==(Null const& other) const;
-        // Inequality Data::operator
+
         bool const operator!=(Null const& other) const;
     };
 

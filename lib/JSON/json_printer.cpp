@@ -7,7 +7,7 @@ namespace JSON {
     namespace {  // Annoymous to limit to json_printer.cpp
         std::string getIndentation(int indent) {
             std::string spaces;
-            for (int i = 0; i < indentWidth * indent; ++i) {
+            for (int index = 0; index < indentWidth * indent; ++index) {
                 spaces += " ";
             }
             return spaces;
@@ -15,7 +15,7 @@ namespace JSON {
 
         std::string getNewLines(int numNewLines) {
             std::string newLines;
-            for (int i = 0; i < numNewLines; ++i) {
+            for (int index = 0; index < numNewLines; ++index) {
                 newLines += '\n';
             }
             return newLines;
@@ -23,31 +23,31 @@ namespace JSON {
     }  // namespace
 
     // Stream Data::operator Overload
-    std::ostream& operator<<(std::ostream& os, Data const& d) {
-        switch (d.index()) {
+    std::ostream& operator<<(std::ostream& os, Data const& data) {
+        switch (data.index()) {
         case Type::JSON_NULL:
             os << "null";
             break;
         case Type::INT:
-            os << std::get<int>(d.value);
+            os << std::get<int>(data.value);
             break;
         case Type::UINT:
-            os << std::get<unsigned int>(d.value);
+            os << std::get<unsigned int>(data.value);
             break;
         case Type::DOUBLE:
-            os << std::get<double>(d.value);
+            os << std::get<double>(data.value);
             break;
         case Type::BOOL:
-            os << (std::get<bool>(d.value) ? "true" : "false");
+            os << (std::get<bool>(data.value) ? "true" : "false");
             break;
         case Type::STD_STRING:
-            os << "\"" << std::get<std::string>(d.value) << "\"";
+            os << "\"" << std::get<std::string>(data.value) << "\"";
             break;
         case Type::JSON_OBJECT:
-            os << "\"Invalid Output (JSON::Object)\"";
+            os << prettyPrint(data);
             break;
         case Type::JSON_ARRAY:
-            os << "\"Invalid Output (JSON::Array)\"";
+            os << print(data);
             break;
         }
 
@@ -76,9 +76,9 @@ namespace JSON {
             Array const array = std::get<Array>(data.value);
             ss << "[" << getNewLines(newLines);
             ++indentWidth;
-            for (int i = 0; i < array.size(); ++i) {
-                ss << getIndentation(indent) << prettyPrint(array[i], indent);
-                if (i != array.size() - 1) { ss << ","; }
+            for (int index = 0; index < array.size(); ++index) {
+                ss << getIndentation(indent) << prettyPrint(array[index], indent);
+                if (index != array.size() - 1) { ss << ","; }
                 else if (indent == 1) { ss << " "; }  // edge case for flat printing
                 ss << getNewLines(newLines);
             }

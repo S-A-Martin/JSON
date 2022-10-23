@@ -99,7 +99,7 @@ namespace JSON {
 
             while (str[index] != '}' && index < str.size()) {
                 LOG(str[index]);
-                
+
                 if (charIsInString(str[index], "-0123456789.") && haveKey) {
                     object[key] = parseNumerical(str, index);
                     key = "";
@@ -146,7 +146,7 @@ namespace JSON {
                     }
                     else {
                         object[key] = parseString(str, index);
-                        key = "";  // reset the key
+                        key = "";
                         haveKey = false;
                     }
                     break;
@@ -154,7 +154,7 @@ namespace JSON {
                 case 't':
                     if (haveKey) {
                         object[key] = true;
-                        key = "";  // reset the key
+                        key = "";
                         haveKey = false;
                     }
                     break;
@@ -162,7 +162,7 @@ namespace JSON {
                 case 'f':
                     if (haveKey) {
                         object[key] = false;
-                        key = "";  // reset the key
+                        key = "";
                         haveKey = false;
                     }
                     break;
@@ -170,7 +170,7 @@ namespace JSON {
                 case 'n':
                     if (haveKey) {
                         object[key] = nullptr;
-                        key = "";  // reset the key
+                        key = "";
                         haveKey = false;
                     }
                     break;
@@ -185,34 +185,32 @@ namespace JSON {
         }
     }  // namespace
 
-    std::string readFile(const char* filepath) {
+    Data parseFile(const char* filepath) {
         std::ifstream file(filepath);
         std::stringstream ss;
         ss << file.rdbuf();
         file.close();
-        return ss.str();
-    }
+        std::string const str = ss.str();
 
-    Data parse(std::string const& jsonAsString) {
         Data object = Object{};
         int index = 0;
-        LOG(jsonAsString[i]);
+        LOG(str[index]);
 
-        while (isWhiteSpace(jsonAsString[index] && index < jsonAsString.size())) {
+        while (isWhiteSpace(str[index] && index < str.size())) {
             index++;
-            LOG(jsonAsString[i]);
+            LOG(str[index]);
         }
 
-        if (jsonAsString[index] != '{') {
+        if (str[index] != '{') {
             return Null{};
         } /* TODO: throw or report an error */
 
-        return parseObject(object, jsonAsString, ++index);
+        return parseObject(object, str, ++index);
     }
 
-    void saveFile(Data const& data, char const* saveFilepath) {
+    void saveFile(Data const& data, char const* filepath) {
         std::ofstream file;
-        file.open(saveFilepath, std::ofstream::out | std::ofstream::trunc);
+        file.open(filepath, std::ofstream::out | std::ofstream::trunc);
         file << prettyPrint(data);
         file.close();
     }
