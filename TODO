@@ -7,7 +7,4 @@
 - Test JSON With all min and max values for numericals
 - Check there's enough array tests
 - Check for pass by const ref and pass by value where needed
-
-
-- Think about general public API... JSON::readFile, JSON::saveFile and JSON::print. Also consider << for Data to allow std::cout << data.
 - Think about aux functions like Data::add() Data::remove()

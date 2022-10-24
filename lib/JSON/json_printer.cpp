@@ -1,28 +1,47 @@
 #include "json_printer.h"
+#include <utility>
 
-static int indentWidth = 0;
+static int s_numTabs = 0;
+static int s_tabWidth = 4;
+static int s_numNewLines = 1;
 
 namespace JSON {
 
     namespace {  // Annoymous to limit to json_printer.cpp
-        std::string getIndentation(int indent) {
-            std::string spaces;
-            for (int index = 0; index < indentWidth * indent; ++index) {
-                spaces += " ";
+
+        std::string charRepeater(char c, int indexMax) {
+            std::string str;
+            for (int index = 0; index < indexMax; ++index) {
+                str += c;
             }
-            return spaces;
+            return str;
         }
 
-        std::string getNewLines(int numNewLines) {
-            std::string newLines;
-            for (int index = 0; index < numNewLines; ++index) {
-                newLines += '\n';
-            }
-            return newLines;
+        std::string prettyPrint(const std::pair<const std::string, Data> it, int numSpaces, int numNewLines) {
+            return std::string("\"" + it.first + "\": " + prettyPrint(it.second, numSpaces, numNewLines));
         }
+
+        template <typename T>
+        std::string prettyPrintCollection(T const& collection, int numSpaces, int numNewLines, const char* brackets) {
+            std::string str;
+            str += brackets[0] + charRepeater('\n', s_numNewLines);
+            ++s_numTabs;
+            for (auto const& it : collection) {
+                str += charRepeater(' ', s_numTabs * s_tabWidth) + prettyPrint(it, numSpaces, numNewLines);
+                if (it != *std::prev(collection.end(), 1)) { str += ","; }  // if not the last collection element
+                else if (s_tabWidth == 1) { str += " "; }                   // edge case for flat printing
+                str += charRepeater('\n', s_numNewLines);
+            }
+            s_numTabs--;
+            str += charRepeater(' ', s_numTabs * s_tabWidth) + brackets[1];
+            return str;
+        }
+
+        template std::string prettyPrintCollection(Object const& collection, int numSpaces, int numNewLines, const char* brackets);
+        template std::string prettyPrintCollection(Array const& collection, int numSpaces, int numNewLines, const char* brackets);
+
     }  // namespace
 
-    // Stream Data::operator Overload
     std::ostream& operator<<(std::ostream& os, Data const& data) {
         switch (data.index()) {
         case Type::JSON_NULL:
@@ -44,48 +63,20 @@ namespace JSON {
             os << "\"" << std::get<std::string>(data.value) << "\"";
             break;
         case Type::JSON_OBJECT:
-            os << prettyPrint(data);
+            os << prettyPrintCollection(std::get<Object>(data.value), s_tabWidth, s_numNewLines, "{}");
             break;
         case Type::JSON_ARRAY:
-            os << print(data);
+            os << prettyPrintCollection(std::get<Array>(data.value), s_tabWidth, s_numNewLines, "[]");
             break;
         }
-
         return os;
     }
 
-    std::string prettyPrint(Data const& data, int indent, int newLines) {
+    std::string prettyPrint(Data const& data, int numSpaces, int numNewLines) {
+        s_tabWidth = numSpaces;
+        s_numNewLines = numNewLines;
         std::stringstream ss;
-
-        if (data.index() == JSON_OBJECT) {
-            Object const object = std::get<Object>(data.value);
-            ss << "{" << getNewLines(newLines);
-            ++indentWidth;
-            Object::const_iterator it;
-            for (it = object.begin(); it != object.end(); ++it) {
-                ss << getIndentation(indent) << "\"" << it->first << "\": " << prettyPrint(it->second, indent);
-                if (it != std::prev(object.end(), 1)) { ss << ","; }
-                else if (indent == 1) { ss << " "; }  // edge case for flat printing
-                ss << getNewLines(newLines);
-            }
-            indentWidth--;
-            ss << getIndentation(indent) << "}";
-        }
-
-        else if (data.index() == JSON_ARRAY) {
-            Array const array = std::get<Array>(data.value);
-            ss << "[" << getNewLines(newLines);
-            ++indentWidth;
-            for (int index = 0; index < array.size(); ++index) {
-                ss << getIndentation(indent) << prettyPrint(array[index], indent);
-                if (index != array.size() - 1) { ss << ","; }
-                else if (indent == 1) { ss << " "; }  // edge case for flat printing
-                ss << getNewLines(newLines);
-            }
-            indentWidth--;
-            ss << getIndentation(indent) << "]";
-        }
-        else { ss << data; }
+        ss << data;
         return ss.str();
     }
 

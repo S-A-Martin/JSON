@@ -55,7 +55,17 @@ TEST(JSONDataValueJSONArray, StreamOverloadShouldPrintCorrectString) {
     std::stringstream ss;
     JSON::Data data = JSON::Array{ "Test String", 1, 6.5, false, 7U };
     ss << data;
-    EXPECT_EQ(ss.str(), R"([ "Test String", 1, 6.5, false, 7 ])");
+    // clang-format off
+    std::string expected = 
+R"([
+    "Test String",
+    1,
+    6.5,
+    false,
+    7
+])";
+    // clang-format on
+    EXPECT_EQ(ss.str(), expected);
 }
 
 TEST(JSONPrinter, PrettyPrintingDataWithJSONNullProducesCorrectString) {
