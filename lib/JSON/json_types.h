@@ -28,3 +28,5 @@ namespace JSON {
     typedef std::variant<Null, int, unsigned int, double, bool, std::string, Object, Array> Value;
 
 };  // namespace JSON
+
+typedef JSON::Object json;  // Main declaration for a json variable
