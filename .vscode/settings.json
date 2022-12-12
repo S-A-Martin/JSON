@@ -77,6 +77,8 @@
         "variant": "cpp",
         "vector": "cpp",
         "__memory": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "compare": "cpp",
+        "concepts": "cpp"
     }
 }

@@ -1,3 +1,4 @@
+- What happens in printing and parsing empty arrays or empty objects?
 - Add more comments!
 - Add in error checking and possibly throw exceptions when parsing hits a snag or invalid JSON syn
 - Think about expectations. Do you expect calling 'prettyPrint(data)' will print the data or return a string?

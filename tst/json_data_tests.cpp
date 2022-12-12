@@ -557,6 +557,77 @@ TEST(JSONDataValueJSONArray, EqualityWithNonJSONArrayShouldBeFalse) {
     EXPECT_TRUE(data != other3);
 }
 
+TEST(JSONDataValueJSONArray, CanConstructJSONArrayWithStdVectorOfInts) {
+    std::vector<int> ints = { 1, 2, 3 };
+    JSON::Data json = JSON::Object{};
+    json["ints"] = ints;
+    for (int i = 0; i < ints.size(); i++) {
+        EXPECT_EQ(ints[i], json["ints"][i]);
+    }
+}
+
+TEST(JSONDataValueJSONArray, CanRetrieveStdVectorOfIntsFromJSONArray) {
+    JSON::Data json = JSON::Object{ { "ints", JSON::Array{ 1, 2, 3 } } };
+    std::vector<int> ints = json["ints"];
+    for (int i = 0; i < ints.size(); i++) {
+        EXPECT_EQ(ints[i], json["ints"][i]);
+    }
+}
+
+TEST(JSONDataValueJSONArray, CanConstructJSONArrayWithStdVectorOfUnsignedInt) {
+    std::vector<unsigned int> uints = { 1U, 2U, 3U };
+    JSON::Data json = JSON::Object{};
+    json["uints"] = uints;
+    for (int i = 0; i < uints.size(); i++) {
+        EXPECT_EQ(uints[i], json["uints"][i]);
+    }
+}
+
+TEST(JSONDataValueJSONArray, CanRetrieveStdVectorOfUnsignedIntFromJSONArray) {
+    JSON::Data json = JSON::Object{ { "uints", JSON::Array{ 1U, 2U, 3U } } };
+    std::vector<unsigned int> uints = json["uints"];
+    for (int i = 0; i < uints.size(); i++) {
+        EXPECT_EQ(uints[i], json["uints"][i]);
+    }
+}
+
+TEST(JSONDataValueJSONArray, CanConstructJSONArrayWithStdVectorOfDoubles) {
+    std::vector<double> doubles = { 4.7, 2.3, 2.3 };
+    JSON::Data json = JSON::Object{};
+    json["doubles"] = doubles;
+    for (int i = 0; i < doubles.size(); i++) {
+        EXPECT_EQ(doubles[i], json["doubles"][i]);
+    }
+}
+
+TEST(JSONDataValueJSONArray, CanRetrieveStdVectorOfDoublesFromJSONArray) {
+    JSON::Data json = JSON::Object{ { "doubles", JSON::Array{ 4.7, 2.3, 2.3 } } };
+    std::vector<double> doubles = json["doubles"];
+    for (int i = 0; i < doubles.size(); i++) {
+        EXPECT_EQ(doubles[i], json["doubles"][i]);
+    }
+}
+
+TEST(JSONDataValueJSONArray, CanConstructJSONArrayWithStdVectorOfStrings) {
+    std::vector<std::string> strings = { "test", "strings", "vector" };
+    JSON::Data json = JSON::Object{};
+    json["strings"] = strings;
+    for (int i = 0; i < strings.size(); i++) {
+        EXPECT_EQ(strings[i], json["strings"][i]);
+    }
+}
+TEST(JSONDataValueJSONArray, CanRetrieveStdVectorOfStringsFromJSONArray) {
+    JSON::Data json = JSON::Object{ { "strings", JSON::Array{ "test", "strings", "vector" } } };
+    std::vector<std::string> strings = json["strings"];
+    for (int i = 0; i < strings.size(); i++) {
+        EXPECT_EQ(strings[i], json["strings"][i]);
+    }
+}
+
+//
+// TODO add in array and object
+//
+
 TEST(JSONData, CanAccessDataValueObjectViaSubscriptOperatorWithConstCharPtr) {
     JSON::Data data = JSON::Object{ { "Test1", 5.5 },
                                     { "Test2", 500 } };

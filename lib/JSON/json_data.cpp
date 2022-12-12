@@ -23,6 +23,23 @@ namespace JSON {
     template <>
     Data::Data(char const* t) : value(std::string(t)) {}
 
+    template <typename T>
+    Data::Data(std::vector<T> vector) {
+        value = JSON::Array{};
+        for (auto s : vector) {
+            std::get<Array>(value).push_back(JSON::Data{ s });
+        }
+    }
+
+    template Data::Data(std::vector<Null>);
+    template Data::Data(std::vector<int>);
+    template Data::Data(std::vector<unsigned int>);
+    template Data::Data(std::vector<double>);
+    // std::vector<bool> missing as the STL has specialised it for another use
+    template Data::Data(std::vector<std::string>);
+    template Data::Data(std::vector<Object>);
+    template Data::Data(std::vector<Array>);
+
     // Conversion Data::operators
     template <typename T>
     Data::operator T() { return std::get<T>(value); }
@@ -38,6 +55,21 @@ namespace JSON {
 
     template <>
     Data::operator float() { return (float)std::get<double>(value); }
+
+    template <typename T>
+    Data::operator std::vector<T>() {
+        std::vector<T> vec;
+        for (auto& s : std::get<Array>(value)) {
+            vec.push_back(s);
+        }
+        return vec;
+    }
+
+    template Data::operator std::vector<int>();
+    template Data::operator std::vector<unsigned int>();
+    template Data::operator std::vector<double>();
+    // std::vector<bool> missing as the STL has specialised it for another use
+    template Data::operator std::vector<std::string>();
 
     // Square Bracket Overloads for Object
     Data const& Data::operator[](std::string const& key) const {
