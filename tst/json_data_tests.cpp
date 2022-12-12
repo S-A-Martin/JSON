@@ -624,9 +624,60 @@ TEST(JSONDataValueJSONArray, CanRetrieveStdVectorOfStringsFromJSONArray) {
     }
 }
 
-//
-// TODO add in array and object
-//
+TEST(JSONDataValueJSONArray, CanConstructJSONArrayWithStdVectorOfArrays) {
+    std::vector<JSON::Array> vecArray = {
+        { 1, "strings", false },
+        { 6.5, true, -5 }
+    };
+    JSON::Data json = JSON::Object{};
+    json["array"] = vecArray;
+    for (int i = 0; i < vecArray.size(); i++) {
+        EXPECT_EQ(vecArray[i], json["array"][i]);
+    }
+}
+
+TEST(JSONDataValueJSONArray, CanRetrieveStdVectorOfArraysFromJSONArray) {
+    JSON::Data json = JSON::Object{
+        { "arrays", JSON::Array{ JSON::Array{ 1, "strings", false }, JSON::Array{ 6.5, true, -5 } } }
+    };
+    std::vector<JSON::Array> vecArray = json["arrays"];
+    for (int i = 0; i < vecArray.size(); i++) {
+        EXPECT_EQ(vecArray[i], json["arrays"][i]);
+    }
+}
+
+TEST(JSONDataValueJSONArray, CanConstructJSONArrayWithStdVectorOfObjects) {
+    std::vector<JSON::Object> vecObject = { JSON::Object{ { "Test1", 5.5 },
+                                                          { "Test2", 500 } },
+                                            JSON::Object{ { "Test3", 7.6 },
+                                                          { "Test4", 890 } } };
+    JSON::Data json = JSON::Object{};
+    json["object"] = vecObject;
+    for (int i = 0; i < vecObject.size(); i++) {
+        EXPECT_EQ(vecObject[i], json["object"][i]);
+    }
+}
+
+TEST(JSONDataValueJSONArray, CanRetrieveStdVectorOfObjectsFromJSONArray) {
+    // clang-format off
+    JSON::Data json = JSON::Object {
+        { "objects", JSON::Array {
+                        JSON::Object{ { "Test1", 5.5 }, 
+                                      { "Test2", 500 }
+                                    },
+                        JSON::Object{ { "Test3", 7.6 }, 
+                                      { "Test4", 890 }
+                                    }
+                     }
+        }
+    };
+    // clang-format on
+
+    std::vector<JSON::Object> vecObject = json["objects"];
+    for (int i = 0; i < vecObject.size(); i++) {
+        EXPECT_EQ(vecObject[i], json["objects"][i]);
+    }
+}
 
 TEST(JSONData, CanAccessDataValueObjectViaSubscriptOperatorWithConstCharPtr) {
     JSON::Data data = JSON::Object{ { "Test1", 5.5 },

@@ -70,6 +70,8 @@ namespace JSON {
     template Data::operator std::vector<double>();
     // std::vector<bool> missing as the STL has specialised it for another use
     template Data::operator std::vector<std::string>();
+    template Data::operator std::vector<JSON::Object>();
+    template Data::operator std::vector<JSON::Array>();
 
     // Square Bracket Overloads for Object
     Data const& Data::operator[](std::string const& key) const {
