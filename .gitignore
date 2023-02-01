@@ -1,5 +1,6 @@
 #Custom
-build/*
+build/
+[Bb][Uu][Ii][Ll][Dd]/
 .DS_Store
 syncpoints.json
 
