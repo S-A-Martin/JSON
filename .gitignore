@@ -1,6 +1,7 @@
 #Custom
 build/*
 .DS_Store
+syncpoints.json
 
 #CMake
 CMakeLists.txt.user

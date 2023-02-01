@@ -1,3 +1,18 @@
+- BUG: What happens if a json file starts with an array? 
+- BUG: What happens in pretty print if we print an array of arrays?
+- Okay so JSON is valid if it starts with just an array (square brackets) so no outer object. So we need to have a 
+  long think about how to approach that. What if we start with a JSON variable that's just an array, then we add something new to it.
+  Will it need to be swapped to an object and move the array across?
+
+
+
+
+
+
+
+
+
+- Add in construction using and retrieval into std::map<std::string, typename T>
 - What happens in printing and parsing empty arrays or empty objects?
 - Add more comments!
 - Add in error checking and possibly throw exceptions when parsing hits a snag or invalid JSON syn
@@ -9,3 +24,4 @@
 - Check there's enough array tests
 - Check for pass by const ref and pass by value where needed
 - Think about aux functions like Data::add() Data::remove()
+- Consider the use of iterators
